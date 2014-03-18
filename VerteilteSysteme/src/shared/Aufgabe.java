@@ -2,6 +2,8 @@ package shared;
 
 public class Aufgabe {
 	private int worker;
+        private int id;
+        private String client;
 
 	public int getWorker() {
 		return worker;
