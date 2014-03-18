@@ -36,4 +36,9 @@ public class Matrizenmultiplikation extends Aufgabe {
 		this.matrix_ergebnis = matrix_ergebnis;
 	}
 
+        
+       // public int getStatus(){
+            
+      //      return status;
+        //}
 }
