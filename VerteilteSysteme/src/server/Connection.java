@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import shared.SerializedFile;
-import shared.SerializedMessage;
 import javax.swing.JFrame;
 
 import java.net.Socket;
@@ -65,7 +63,7 @@ public class Connection extends Thread {
 	}
 
 	public void analyseInput() {
-		if (inputObject instanceof SerializedFile) {
+		/*if (inputObject instanceof SerializedFile) {
 			SerializedFile file = (SerializedFile) inputObject;
 
 			String userDirectory = System.getProperty("user.home")
@@ -82,7 +80,7 @@ public class Connection extends Thread {
 		} else if (inputObject instanceof SerializedMessage) {
 			//SerializedMessage message = (SerializedMessage) inputObject;
 			//String oldText = recievedText.getText();
-		}
+		}*/
 	}
 
 	@SuppressWarnings("deprecation")

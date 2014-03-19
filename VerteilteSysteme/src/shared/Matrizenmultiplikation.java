@@ -1,44 +1,51 @@
 package shared;
 
-public class Matrizenmultiplikation extends Aufgabe {
-	private int[][] matrix_eins;
-	private int[][] matrix_zwei;
-	private Object[][] matrix_ergebnis;
+import java.io.Serializable;
 
-	public Matrizenmultiplikation(int worker, int[][] matrix_eins,
-			int[][] matrix_zwei) {
-		super(worker);
-		this.matrix_eins = matrix_eins;
-		this.matrix_zwei = matrix_zwei;
+public class Matrizenmultiplikation extends Aufgabe implements Serializable {
+	private static final long serialVersionUID = -6439674567738452423L;
+	private int[][] matrixA;
+	private int[][] matrixB;
+	private int[][] matrixErgebnis;
+	private int status;
+
+	public Matrizenmultiplikation(int id, int worker, String client,
+			int[][] matrixA, int[][] matrixB) {
+		super(id, worker, client);
+		this.matrixA = matrixA;
+		this.matrixB = matrixB;
+		this.status = 0;
 	}
 
-	public int[][] getMatrix_eins() {
-		return matrix_eins;
+	public int[][] getMatrixA() {
+		return matrixA;
 	}
 
-	public void setMatrix_eins(int[][] matrix_eins) {
-		this.matrix_eins = matrix_eins;
+	public void setMatrixA(int[][] matrixA) {
+		this.matrixA = matrixA;
 	}
 
-	public int[][] getMatrix_zwei() {
-		return matrix_zwei;
+	public int[][] getMatrixB() {
+		return matrixB;
 	}
 
-	public void setMatrix_zwei(int[][] matrix_zwei) {
-		this.matrix_zwei = matrix_zwei;
+	public void setMatrixB(int[][] matrixB) {
+		this.matrixB = matrixB;
 	}
 
-	public Object[][] getMatrix_ergebnis() {
-		return matrix_ergebnis;
+	public int[][] getMatrixErgebnis() {
+		return matrixErgebnis;
 	}
 
-	public void setMatrix_ergebnis(Object[][] matrix_ergebnis) {
-		this.matrix_ergebnis = matrix_ergebnis;
+	public void setMatrixErgebnis(int[][] matrixErgebnis) {
+		this.matrixErgebnis = matrixErgebnis;
 	}
 
-        
-       // public int getStatus(){
-            
-      //      return status;
-        //}
+	public int getStatus() {
+		return status;
+	}
+	
+	public void setStatus(int status) {
+		this.status = status;
+	}
 }
