@@ -113,4 +113,40 @@ public class Worker {
 			return false;
 		}
 	}
+	
+	
+	
+	public int matrixmultiplikation(int [] zeile, int [] spalte){
+		int result = 0;
+		for(int i = 0; i<= zeile.length; i++){
+			for(int j = 0; j<= spalte.length; j++)
+			result += zeile[i] * spalte[j];
+		}
+			
+		
+		return result;
+ 	}
+	
+	
+	public int sklara(int [] zahl, boolean addieren){
+		int ergebnis;
+		
+		if(addieren = false)
+		{
+			ergebnis= 1;
+			
+			for(int i = 0; i< zahl.length; i++){
+			
+				ergebnis *= zahl[i];
+			}
+		}else{
+			ergebnis = 0;
+			
+			for(int i = 0; i< zahl.length; i++){
+				ergebnis += zahl[i];
+			}
+		}
+			
+		return ergebnis;
+	}
 }
