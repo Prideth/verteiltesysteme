@@ -1,21 +1,26 @@
 package shared;
 
 public class Aufgabe {
+	private int id;
 	private int worker;
-        private int id;
-        private String client;
+	private String client;
 
+	public Aufgabe(int id, int worker, String client) {
+		super();
+		this.id = id;
+		this.worker = worker;
+		this.client = client;
+	}
+
+	public int getId() {
+		return id;
+	}
+	
 	public int getWorker() {
 		return worker;
 	}
 
-	public Aufgabe(int worker) {
-		super();
-		this.worker = worker;
+	public String getClient() {
+		return client.toString();
 	}
-
-	public void setWorker(int worker) {
-		this.worker = worker;
-	}
-
 }

@@ -1,47 +1,50 @@
 package shared;
 
-public class Skalarprodukt extends Aufgabe {
-	private int[] skalar_eins;
-	private int[] skalar_zwei;
-	private Object[] zwischenergebnis;
-	private Object ergebnis;
+import java.io.Serializable;
 
-	public Skalarprodukt(int worker, int[] skalar_eins, int[] skalar_zwei) {
-		super(worker);
-		this.skalar_eins = skalar_eins;
-		this.skalar_zwei = skalar_zwei;
+public class Skalarprodukt extends Aufgabe implements Serializable {
+	private static final long serialVersionUID = -8732035671190447859L;
+	private int[] skalarA;
+	private int[] skalarB;
+	private int[] zwischenErgebnis;
+	private double ergebnis;
+
+	public Skalarprodukt(int id, int worker, String client, int[] skalarA,
+			int[] skalarB) {
+		super(id, worker, client);
+		this.skalarA = skalarA;
+		this.skalarB = skalarB;
 	}
 
-	public int[] getSkalar_eins() {
-		return skalar_eins;
+	public int[] getSkalarA() {
+		return skalarA;
 	}
 
-	public void setSkalar_eins(int[] skalar_eins) {
-		this.skalar_eins = skalar_eins;
+	public void setSkalarA(int[] skalarA) {
+		this.skalarA = skalarA;
 	}
 
-	public int[] getSkalar_zwei() {
-		return skalar_zwei;
+	public int[] getSkalarB() {
+		return skalarB;
 	}
 
-	public void setSkalar_zwei(int[] skalar_zwei) {
-		this.skalar_zwei = skalar_zwei;
+	public void setSkalarB(int[] skalarB) {
+		this.skalarB = skalarB;
 	}
 
-	public Object[] getZwischenergebnis() {
-		return zwischenergebnis;
+	public int[] getZwischenErgebnis() {
+		return zwischenErgebnis;
 	}
 
-	public void setZwischenergebnis(Object[] zwischenergebnis) {
-		this.zwischenergebnis = zwischenergebnis;
+	public void setZwischenErgebnis(int[] zwischenErgebnis) {
+		this.zwischenErgebnis = zwischenErgebnis;
 	}
 
-	public Object getErgebnis() {
+	public double getErgebnis() {
 		return ergebnis;
 	}
 
-	public void setErgebnis(Object ergebnis) {
+	public void setErgebnis(double ergebnis) {
 		this.ergebnis = ergebnis;
 	}
-
 }

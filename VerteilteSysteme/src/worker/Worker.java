@@ -2,7 +2,6 @@ package worker;
 
 import java.io.*;
 import java.net.*;
-import shared.SerializedFile;
 
 public class Worker {
 	final static int PORT = 6666;
@@ -59,12 +58,12 @@ public class Worker {
 	}
 
 	private void analyseInput() {
-		if (inputObject instanceof SerializedFile) {
+		/*if (inputObject instanceof SerializedFile) {
 			serializedFile();
-		}
+		}*/
 	}
 
-	private static void serializedFile() {
+	/*private static void serializedFile() {
 		SerializedFile file = (SerializedFile) inputObject;
 
 		String directory = file.getFilePath();
@@ -77,7 +76,7 @@ public class Worker {
 		file.save(directory);
 		file = null;
 		f = null;
-	}
+	}*/
 
 	private static void close() {
 		try {
