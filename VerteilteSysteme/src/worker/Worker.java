@@ -118,8 +118,7 @@ public class Worker {
 	public int matrixmultiplikation(int [] zeile, int [] spalte){
 		int result = 0;
 		for(int i = 0; i<= zeile.length; i++){
-			for(int j = 0; j<= spalte.length; j++)
-			result += zeile[i] * spalte[j];
+			result += zeile[i] * spalte[i];
 		}
 			
 		
