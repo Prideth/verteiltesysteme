@@ -6,15 +6,13 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 	private static final long serialVersionUID = -6439674567738452423L;
 	private int[][] matrixA;
 	private int[][] matrixB;
-	private int[][] matrixErgebnis;
-	private int status;
+	private Object[][] matrixErgebnis;
 
 	public Matrizenmultiplikation(int id, int worker, String client,
 			int[][] matrixA, int[][] matrixB) {
 		super(id, worker, client);
 		this.matrixA = matrixA;
 		this.matrixB = matrixB;
-		this.status = 0;
 	}
 
 	public int[][] getMatrixA() {
@@ -33,19 +31,29 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 		this.matrixB = matrixB;
 	}
 
-	public int[][] getMatrixErgebnis() {
+	public Object[][] getMatrixErgebnis() {
 		return matrixErgebnis;
 	}
 
-	public void setMatrixErgebnis(int[][] matrixErgebnis) {
+	public void setMatrixErgebnis(Object[][] matrixErgebnis) {
 		this.matrixErgebnis = matrixErgebnis;
 	}
 
 	public int getStatus() {
-		return status;
+		double gesamt = 0;
+		double fertig = 0;
+		
+		for(int i=0; i < matrixErgebnis.length; i++){
+			for (int j=0; j < matrixErgebnis.length; j++){
+				//evtl double besser!!
+				if(matrixErgebnis[i][j] instanceof Integer)
+					fertig++;
+				
+				gesamt++;
+			}
+		}
+		
+		return (int) (fertig*100/gesamt);
 	}
-	
-	public void setStatus(int status) {
-		this.status = status;
-	}
+
 }

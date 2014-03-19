@@ -12,13 +12,18 @@ public class Aufgabenverwaltung {
     
     private List<Aufgabe> aufgaben = new ArrayList<Aufgabe>();
     
-   /* public void addAufgabe(nAufgabe){
-        
-        aufgaben.add(nAufgabe);
-        
-    }*/
+    public Aufgabenverwaltung(){
+    	
+    }
     
     
+    public void add(Aufgabe newAufgabe){
+    	aufgaben.add(newAufgabe);
+    }
+    
+    public void remove(Aufgabe delAufgabe){
+    	aufgaben.remove(delAufgabe);
+    }
     
     
 }

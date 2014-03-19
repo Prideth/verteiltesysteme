@@ -6,8 +6,8 @@ public class Skalarprodukt extends Aufgabe implements Serializable {
 	private static final long serialVersionUID = -8732035671190447859L;
 	private int[] skalarA;
 	private int[] skalarB;
-	private int[] zwischenErgebnis;
-	private double ergebnis;
+	private Object[] zwischenErgebnis;
+	private Object ergebnis;
 
 	public Skalarprodukt(int id, int worker, String client, int[] skalarA,
 			int[] skalarB) {
@@ -32,19 +32,19 @@ public class Skalarprodukt extends Aufgabe implements Serializable {
 		this.skalarB = skalarB;
 	}
 
-	public int[] getZwischenErgebnis() {
+	public Object[] getZwischenErgebnis() {
 		return zwischenErgebnis;
 	}
 
-	public void setZwischenErgebnis(int[] zwischenErgebnis) {
+	public void setZwischenErgebnis(Object[] zwischenErgebnis) {
 		this.zwischenErgebnis = zwischenErgebnis;
 	}
 
-	public double getErgebnis() {
+	public Object getErgebnis() {
 		return ergebnis;
 	}
 
-	public void setErgebnis(double ergebnis) {
+	public void setErgebnis(Object ergebnis) {
 		this.ergebnis = ergebnis;
 	}
 }
