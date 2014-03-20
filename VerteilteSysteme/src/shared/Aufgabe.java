@@ -23,4 +23,9 @@ public class Aufgabe {
 	public String getClient() {
 		return client.toString();
 	}
+        
+        
+        public int getStatus() {
+		return 0;
+	}
 }

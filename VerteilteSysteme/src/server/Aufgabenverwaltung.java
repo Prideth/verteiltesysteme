@@ -1,6 +1,8 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import shared.Aufgabe;
 
@@ -10,7 +12,7 @@ import shared.Aufgabe;
  */
 public class Aufgabenverwaltung {
     
-    private List<Aufgabe> aufgaben = new ArrayList<Aufgabe>();
+    private List<Aufgabe> aufgaben = new LinkedList<Aufgabe>();
     
     public Aufgabenverwaltung(){
     	
@@ -24,6 +26,25 @@ public class Aufgabenverwaltung {
     public void remove(Aufgabe delAufgabe){
     	aufgaben.remove(delAufgabe);
     }
+    
+    
+    public Aufgabe deliefer(){
+        Aufgabe fertigeAufgabe = null;
+        for ( Iterator<Aufgabe> iterator = aufgaben.iterator(); iterator.hasNext(); ){
+            Aufgabe aktuelleAufgabe;
+            aktuelleAufgabe = iterator.next();
+            if(aktuelleAufgabe.getStatus()== 100){
+                fertigeAufgabe = aktuelleAufgabe;
+            }
+        }
+        aufgaben.remove(fertigeAufgabe);
+        return fertigeAufgabe;
+    }
+    
+    
+    
+    
+    
     
     
 }

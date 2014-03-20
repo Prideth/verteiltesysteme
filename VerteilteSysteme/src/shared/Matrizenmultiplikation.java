@@ -2,6 +2,12 @@ package shared;
 
 import java.io.Serializable;
 
+/**
+ * 
+ * 
+ * 
+ * @author Andreas
+ */
 public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 	private static final long serialVersionUID = -6439674567738452423L;
 	private int[][] matrixA;
@@ -39,13 +45,28 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 		this.matrixErgebnis = matrixErgebnis;
 	}
 
+        public void setStelle(int spalte, int zeile, Integer zahl){
+            matrixErgebnis[spalte][zeile] = zahl;
+        }
+        
+        public Object getStelle(int spalte, int zeile){
+            return matrixErgebnis[spalte][zeile];
+        }
+        
+        
+        /**
+         * 
+         * Berechnet die Prozentzahl wie viel schon fertiggestellt wurde
+         * 
+         * @return liefert zurück zu wievie Prozent es schon fertig gestellt ist
+         */
+        @Override
 	public int getStatus() {
 		double gesamt = 0;
 		double fertig = 0;
 		
 		for(int i=0; i < matrixErgebnis.length; i++){
 			for (int j=0; j < matrixErgebnis.length; j++){
-				//evtl double besser!!
 				if(matrixErgebnis[i][j] instanceof Integer)
 					fertig++;
 				
