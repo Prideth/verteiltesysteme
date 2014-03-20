@@ -1,18 +1,21 @@
 package shared;
 
-public class Matrizenauftrag {
+import java.io.Serializable;
+
+public class Matrizenauftrag implements Serializable {
+	private static final long serialVersionUID = 7495702832362550668L;
 	private int[] zeile;
 	private int[] spalte;
 	private int ergebnis;
-
-	public int[] getZeile() {
-		return zeile;
-	}
 
 	public Matrizenauftrag(int[] zeile, int[] spalte) {
 		super();
 		this.zeile = zeile;
 		this.spalte = spalte;
+	}
+	
+	public int[] getZeile() {
+		return zeile;
 	}
 
 	public void setZeile(int[] zeile) {
@@ -34,5 +37,4 @@ public class Matrizenauftrag {
 	public void setErgebnis(int ergebnis) {
 		this.ergebnis = ergebnis;
 	}
-
 }

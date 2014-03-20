@@ -1,8 +1,12 @@
 package shared;
 
-public class Skalarauftrag {
+import java.io.Serializable;
+
+public class Skalarauftrag implements Serializable {
+	private static final long serialVersionUID = 4245958107417693443L;
 	private boolean addieren = false;
 	private int[] daten;
+	private int ergebnis;
 
 	public Skalarauftrag(boolean addieren, int[] daten) {
 		super();
@@ -25,5 +29,12 @@ public class Skalarauftrag {
 	public void setDaten(int[] daten) {
 		this.daten = daten;
 	}
-
+	
+	public int getErgebnis() {
+		return ergebnis;
+	}
+	
+	public void setErgebnis(int ergebnis){
+		this.ergebnis = ergebnis;
+	}
 }

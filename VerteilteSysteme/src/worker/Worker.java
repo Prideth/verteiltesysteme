@@ -3,6 +3,9 @@ package worker;
 import java.io.*;
 import java.net.*;
 
+import shared.Matrizenauftrag;
+import shared.Skalarauftrag;
+
 public class Worker {
 	final static int PORT = 6666;
 	final static String IP = "localhost";
@@ -58,25 +61,18 @@ public class Worker {
 	}
 
 	private void analyseInput() {
-		/*if (inputObject instanceof SerializedFile) {
-			serializedFile();
-		}*/
-	}
-
-	/*private static void serializedFile() {
-		SerializedFile file = (SerializedFile) inputObject;
-
-		String directory = file.getFilePath();
-		File f = new File(directory);
-		if (f.isDirectory()) {
-		} else {
-			f.mkdir();
+		if (inputObject instanceof Matrizenauftrag) {
+			Matrizenauftrag mauftrag = (Matrizenauftrag) inputObject;
+			int ergebnis = matrixmultiplikation(mauftrag.getZeile(), mauftrag.getSpalte());
+			mauftrag.setErgebnis(ergebnis);
+			out(mauftrag);
+		} else if (inputObject instanceof Skalarauftrag){
+			Skalarauftrag sauftrag = (Skalarauftrag) inputObject;
+			int ergebnis = sklara(sauftrag.getDaten(), sauftrag.isAddieren());
+			sauftrag.setErgebnis(ergebnis);
+			out(sauftrag);
 		}
-
-		file.save(directory);
-		file = null;
-		f = null;
-	}*/
+	}
 
 	private static void close() {
 		try {

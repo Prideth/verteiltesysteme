@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import javax.swing.JCheckBox;
 
 import shared.Matrizenmultiplikation;
+import shared.Skalarprodukt;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -54,8 +55,8 @@ public class Client {
 	public int jobNummer;
 	public int[][] inhaltMatrizeA;
 	public int[][] inhaltMatrizeB;
-	public int[][] inhaltVektorA;
-	public int[][] inhaltVektorB;
+	public int[] inhaltVektorA;
+	public int[] inhaltVektorB;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -149,11 +150,17 @@ public class Client {
 						}
 						br.close();
 
-						/*DefaultTableModel tabellenmodellMatrizeA = new DefaultTableModel(
-								inhaltMatrizeA, spalten);*/
+						String[][] matrizeA = new String[anzahlZeilen][anzahlSpalten];
+						for(int j = 0; j < anzahlZeilen; j++) {
+							for(int k = 0; k < anzahlSpalten; k++) {
+								matrizeA[j][k] = String.valueOf(inhaltMatrizeA[j][k]);
+							}
+						}
+						DefaultTableModel tabellenmodellMatrizeA = new DefaultTableModel(
+								matrizeA, spalten);
 
-						//table_1.setModel(tabellenmodellMatrizeA);
-						//table_1.repaint();
+						table_1.setModel(tabellenmodellMatrizeA);
+						table_1.repaint();
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -221,11 +228,17 @@ public class Client {
 						}
 						br.close();
 
-						/*DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
-								inhaltMatrizeB, spalten);*/
+						String[][] matrizeB = new String[anzahlZeilen][anzahlSpalten];
+						for(int j = 0; j < anzahlZeilen; j++) {
+							for(int k = 0; k < anzahlSpalten; k++) {
+								matrizeB[j][k] = String.valueOf(inhaltMatrizeB[j][k]);
+							}
+						}
+						DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
+								matrizeB, spalten);
 
-						//table.setModel(tabellenmodellMatrizeB);
-						//table.repaint();
+						table.setModel(tabellenmodellMatrizeB);
+						table.repaint();
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -268,7 +281,6 @@ public class Client {
 					BufferedReader br;
 					try {
 						int anzahlZeilen = 0;
-						int anzahlSpalten = 1;
 
 						br = new BufferedReader(new FileReader(path));
 
@@ -279,25 +291,31 @@ public class Client {
 						br.close();
 
 						String[] spalten = { "1." };
-						inhaltVektorA = new int[anzahlZeilen][anzahlSpalten];
+						inhaltVektorA = new int[anzahlZeilen];
 
 						br = new BufferedReader(new FileReader(path));
 						int i = 0;
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
 							String[] s = line.toString().split(";");
-							for (int j = 0; j < anzahlSpalten; j++) {
-								inhaltVektorA[i][j] = Integer.parseInt(s[j]);
+							for (int j = 0; j < 1; j++) {
+								inhaltVektorA[i] = Integer.parseInt(s[j]);
 							}
 							i++;
 						}
 						br.close();
 
-						/*DefaultTableModel tabellenmodellVektorA = new DefaultTableModel(
-								inhaltVektorA, spalten);*/
+						String[][] vektorA = new String[anzahlZeilen][1];
+						for(int j = 0; j < anzahlZeilen; j++) {
+							for(int k = 0; k < 1; k++) {
+								vektorA[j][k] = String.valueOf(inhaltVektorA[j]);
+							}
+						}
+						DefaultTableModel tabellenmodellVektorA = new DefaultTableModel(
+								vektorA, spalten);
 
-						//table_2.setModel(tabellenmodellVektorA);
-						//table_2.repaint();
+						table_2.setModel(tabellenmodellVektorA);
+						table_2.repaint();
 					} catch (FileNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -344,25 +362,31 @@ public class Client {
 						br.close();
 
 						String[] spalten = { "1." };
-						inhaltVektorB = new int[anzahlZeilen][anzahlSpalten];
+						inhaltVektorB = new int[anzahlZeilen];
 
 						br = new BufferedReader(new FileReader(path));
 						int i = 0;
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
 							String[] s = line.toString().split(";");
-							for (int j = 0; j < anzahlSpalten; j++) {
-								inhaltVektorB[i][j] = Integer.parseInt(s[j]);
+							for (int j = 0; j < 1; j++) {
+								inhaltVektorB[i] = Integer.parseInt(s[j]);
 							}
 							i++;
 						}
 						br.close();
 
-						/*DefaultTableModel tabellenmodellVektorB = new DefaultTableModel(
-								inhaltVektorB, spalten);*/
+						String[][] vektorB = new String[anzahlZeilen][anzahlSpalten];
+						for(int j = 0; j < anzahlZeilen; j++) {
+							for(int k = 0; k < anzahlSpalten; k++) {
+								vektorB[j][k] = String.valueOf(inhaltVektorA[j]);
+							}
+						}
+						DefaultTableModel tabellenmodellVektorB = new DefaultTableModel(
+								vektorB, spalten);
 
-						//table_3.setModel(tabellenmodellVektorB);
-						//table_3.repaint();
+						table_3.setModel(tabellenmodellVektorB);
+						table_3.repaint();
 					} catch (FileNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -474,10 +498,14 @@ public class Client {
 		btnNewButton_3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				jobNummer = (int) ((Math.random()) * 1000 + 1);
 				String client = socketThread.socket.getInetAddress() + ":" + socketThread.socket.getLocalPort();
 				int worker = 3;
 				Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(jobNummer, worker, client, inhaltMatrizeA, inhaltMatrizeB);
 				socketThread.out(matrizenmull);
+				Skalarprodukt skalarmull = new Skalarprodukt(jobNummer, worker, client, inhaltVektorA,
+						inhaltVektorB);
+				socketThread.out(skalarmull);
 			}
 		});
 		panel_8.add(btnNewButton_3, BorderLayout.CENTER);
