@@ -27,6 +27,16 @@ public class Aufgabenverwaltung {
     	aufgaben.remove(delAufgabe);
     }
     
+    public void removeAll(String client){
+        for ( Iterator<Aufgabe> iterator = aufgaben.iterator(); iterator.hasNext(); ){
+            Aufgabe aktuelleAufgabe;
+            aktuelleAufgabe = iterator.next();
+            if(aktuelleAufgabe.getClient().equals(client)){
+                remove(aktuelleAufgabe);
+            }
+        }
+    }
+    
     
     public Aufgabe deliefer(){
         Aufgabe fertigeAufgabe = null;
@@ -40,11 +50,6 @@ public class Aufgabenverwaltung {
         aufgaben.remove(fertigeAufgabe);
         return fertigeAufgabe;
     }
-    
-    
-    
-    
-    
     
     
 }
