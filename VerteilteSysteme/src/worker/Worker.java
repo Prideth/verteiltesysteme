@@ -5,6 +5,7 @@ import java.net.*;
 
 import shared.Matrizenauftrag;
 import shared.Skalarauftrag;
+import shared.Workcheck;
 
 public class Worker {
 	final static int PORT = 6666;
@@ -16,6 +17,9 @@ public class Worker {
 	private static ObjectInputStream input;
 	private static ObjectOutputStream output;
 	private static boolean connected = false;
+	public boolean working;
+	
+	SkalarThread test;
 
 	public static void main(String[] args) {
 		new Worker();
@@ -63,14 +67,16 @@ public class Worker {
 	private void analyseInput() {
 		if (inputObject instanceof Matrizenauftrag) {
 			Matrizenauftrag mauftrag = (Matrizenauftrag) inputObject;
-			int ergebnis = matrixmultiplikation(mauftrag.getZeile(), mauftrag.getSpalte());
-			mauftrag.setErgebnis(ergebnis);
-			out(mauftrag);
+			MatrixThread test = new MatrixThread(worker, mauftrag);
+			test.start();
 		} else if (inputObject instanceof Skalarauftrag){
 			Skalarauftrag sauftrag = (Skalarauftrag) inputObject;
-			int ergebnis = sklara(sauftrag.getDaten(), sauftrag.isAddieren());
-			sauftrag.setErgebnis(ergebnis);
-			out(sauftrag);
+			SkalarThread test = new SkalarThread(worker, sauftrag);
+			test.start();
+		} else if (inputObject instanceof Workcheck){
+			Workcheck check = (Workcheck) inputObject;
+			check.setWorking(working);
+			out(check);
 		}
 	}
 
@@ -111,36 +117,8 @@ public class Worker {
 	
 	
 	
-	public int matrixmultiplikation(int [] zeile, int [] spalte){
-		int result = 0;
-		for(int i = 0; i<= zeile.length; i++){
-			result += zeile[i] * spalte[i];
-		}
-			
-		
-		return result;
- 	}
 	
 	
-	public int sklara(int [] zahl, boolean addieren){
-		int ergebnis;
-		
-		if(addieren = false)
-		{
-			ergebnis= 1;
-			
-			for(int i = 0; i< zahl.length; i++){
-			
-				ergebnis *= zahl[i];
-			}
-		}else{
-			ergebnis = 0;
-			
-			for(int i = 0; i< zahl.length; i++){
-				ergebnis += zahl[i];
-			}
-		}
-			
-		return ergebnis;
-	}
+	
+	
 }
