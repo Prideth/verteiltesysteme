@@ -66,7 +66,7 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 		double fertig = 0;
 		
 		for(int i=0; i < matrixErgebnis.length; i++){
-			for (int j=0; j < matrixErgebnis.length; j++){
+			for (int j=0; j < matrixErgebnis[i].length; j++){
 				if(matrixErgebnis[i][j] instanceof Integer)
 					fertig++;
 				
