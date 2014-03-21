@@ -1,22 +1,26 @@
 package client;
 import java.io.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import shared.Matrizenmultiplikation;
+import shared.Skalarprodukt;
+import shared.Status;
+import shared.Error;
 
 public class SocketThread extends Thread {
 	final static int PORT = 5555;
 	final static String IP = "localhost";
 	
+	private static Client client;
 	public static Socket socket;
 	private static Object inputObject;
 	private static ObjectInputStream input;
 	private static ObjectOutputStream output;
 	private static boolean connected = false;
 
-	public SocketThread() {
+	public SocketThread(Client client) {
+		this.client = client;
 	}
 
 	public void run() {
@@ -57,25 +61,22 @@ public class SocketThread extends Thread {
 	}
 
 	private static void analyseInput() {
-		/*if (inputObject instanceof SerializedFile) {
-			serializedFile();
-		}*/
-	}
-
-	/*private static void serializedFile() {
-		SerializedFile file = (SerializedFile) inputObject;
-
-		String directory = file.getFilePath();
-		File f = new File(directory);
-		if (f.isDirectory()) {
-		} else {
-			f.mkdir();
+		if (inputObject instanceof Matrizenmultiplikation) {
+			Matrizenmultiplikation ergebnisMatrize = (Matrizenmultiplikation) inputObject;
+			if(ergebnisMatrize.getId() == client.getJobNummer()) {
+				Object[][] objectErgebnis = ergebnisMatrize.getMatrixErgebnis();
+				
+				//int[][] integerErgebnis = new int[objectErgebnis[0].length][objectErgebnis.length];
+				client.setErgebnisMatrize(objectErgebnis);
+			}
+		} else if (inputObject instanceof Skalarprodukt) {
+			
+		} else if (inputObject instanceof Status) {
+			
+		} else if (inputObject instanceof shared.Error) {
+			
 		}
-
-		file.save(directory);
-		file = null;
-		f = null;
-	}*/
+	}
 
 	private static void close() {
 		try {

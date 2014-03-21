@@ -7,7 +7,7 @@ public class Status implements Serializable {
 	private int jobNummer;
 	private int ergebnis;
 	
-	Status(int jobNummer) {
+	public Status(int jobNummer) {
 		this.jobNummer = jobNummer;
 	}
 	
