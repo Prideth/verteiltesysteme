@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import java.awt.BorderLayout;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JSplitPane;
@@ -24,7 +25,6 @@ import javax.swing.JTextField;
 import java.awt.Panel;
 import java.awt.FlowLayout;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -35,12 +35,14 @@ import javax.swing.JCheckBox;
 
 import shared.Matrizenmultiplikation;
 import shared.Skalarprodukt;
+import shared.Status;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class Client {
 
+	private static Client window;
 	private JFrame frmVerteilteBerechnung;
 	private JTable table;
 	private JTable table_1;
@@ -49,6 +51,9 @@ public class Client {
 	private JTextField textField;
 	private JTable table_4;
 	private JTextField textField_1;
+	private JCheckBox chckbxMatrizenmultiplikation;
+	private JCheckBox chckbxSkalarprodukt;
+	private int anzahlWorker;
 
 	private SocketThread socketThread;
 
@@ -57,12 +62,13 @@ public class Client {
 	public int[][] inhaltMatrizeB;
 	public int[] inhaltVektorA;
 	public int[] inhaltVektorB;
+	public Object[][] ergebnisMatrize;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Client window = new Client();
+					window = new Client();
 					window.frmVerteilteBerechnung.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -72,15 +78,17 @@ public class Client {
 	}
 
 	public Client() {
-		jobNummer = (int) ((Math.random()) * 1000 + 1);
+		jobNummer = (int) ((Math.random()) * 10000 + 1);
+		anzahlWorker = 1;
 		inhaltMatrizeA = null;
 		inhaltMatrizeB = null;
 		inhaltVektorA = null;
 		inhaltVektorB = null;
+		ergebnisMatrize = null;
 
 		initialize();
 
-		socketThread = new SocketThread();
+		socketThread = new SocketThread(window);
 		socketThread.start();
 	}
 
@@ -151,9 +159,10 @@ public class Client {
 						br.close();
 
 						String[][] matrizeA = new String[anzahlZeilen][anzahlSpalten];
-						for(int j = 0; j < anzahlZeilen; j++) {
-							for(int k = 0; k < anzahlSpalten; k++) {
-								matrizeA[j][k] = String.valueOf(inhaltMatrizeA[j][k]);
+						for (int j = 0; j < anzahlZeilen; j++) {
+							for (int k = 0; k < anzahlSpalten; k++) {
+								matrizeA[j][k] = String
+										.valueOf(inhaltMatrizeA[j][k]);
 							}
 						}
 						DefaultTableModel tabellenmodellMatrizeA = new DefaultTableModel(
@@ -229,9 +238,10 @@ public class Client {
 						br.close();
 
 						String[][] matrizeB = new String[anzahlZeilen][anzahlSpalten];
-						for(int j = 0; j < anzahlZeilen; j++) {
-							for(int k = 0; k < anzahlSpalten; k++) {
-								matrizeB[j][k] = String.valueOf(inhaltMatrizeB[j][k]);
+						for (int j = 0; j < anzahlZeilen; j++) {
+							for (int k = 0; k < anzahlSpalten; k++) {
+								matrizeB[j][k] = String
+										.valueOf(inhaltMatrizeB[j][k]);
 							}
 						}
 						DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
@@ -306,9 +316,10 @@ public class Client {
 						br.close();
 
 						String[][] vektorA = new String[anzahlZeilen][1];
-						for(int j = 0; j < anzahlZeilen; j++) {
-							for(int k = 0; k < 1; k++) {
-								vektorA[j][k] = String.valueOf(inhaltVektorA[j]);
+						for (int j = 0; j < anzahlZeilen; j++) {
+							for (int k = 0; k < 1; k++) {
+								vektorA[j][k] = String
+										.valueOf(inhaltVektorA[j]);
 							}
 						}
 						DefaultTableModel tabellenmodellVektorA = new DefaultTableModel(
@@ -377,9 +388,10 @@ public class Client {
 						br.close();
 
 						String[][] vektorB = new String[anzahlZeilen][anzahlSpalten];
-						for(int j = 0; j < anzahlZeilen; j++) {
-							for(int k = 0; k < anzahlSpalten; k++) {
-								vektorB[j][k] = String.valueOf(inhaltVektorA[j]);
+						for (int j = 0; j < anzahlZeilen; j++) {
+							for (int k = 0; k < anzahlSpalten; k++) {
+								vektorB[j][k] = String
+										.valueOf(inhaltVektorA[j]);
 							}
 						}
 						DefaultTableModel tabellenmodellVektorB = new DefaultTableModel(
@@ -420,6 +432,12 @@ public class Client {
 		panel_5.add(lblAnzahlWorker, BorderLayout.WEST);
 
 		textField = new JTextField();
+		textField.setText("1");
+		textField.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				anzahlWorker = Integer.valueOf(textField.getText().trim());
+			}
+		});
 		panel_5.add(textField, BorderLayout.CENTER);
 		textField.setColumns(10);
 
@@ -434,11 +452,10 @@ public class Client {
 		JLabel lblBerechnung = new JLabel("Berechnen:");
 		panel_6.add(lblBerechnung);
 
-		JCheckBox chckbxMatrizenmultiplikation = new JCheckBox(
-				"Matrizenmultiplikation");
+		chckbxMatrizenmultiplikation = new JCheckBox("Matrizenmultiplikation");
 		panel_6.add(chckbxMatrizenmultiplikation);
 
-		JCheckBox chckbxSkalarprodukt = new JCheckBox("Skalarprodukt");
+		chckbxSkalarprodukt = new JCheckBox("Skalarprodukt");
 		panel_6.add(chckbxSkalarprodukt);
 
 		JScrollPane scrollPane_4 = new JScrollPane();
@@ -469,27 +486,28 @@ public class Client {
 				JFileChooser chooser = new JFileChooser();
 				chooser.showDialog(null, "Datei auswählen");
 				String path = chooser.getSelectedFile().getPath();
-				
-				String zeilenTrennTeichen = System.getProperty("line.separator");
+
+				String zeilenTrennTeichen = System
+						.getProperty("line.separator");
 				PrintWriter pWriter = null;
-		        try {
-		        	StringBuffer sb = new StringBuffer("");
-		            pWriter = new PrintWriter(new FileWriter(path));
-		            for (int i = 0; i < inhaltMatrizeA.length; i++) {
+				try {
+					StringBuffer sb = new StringBuffer("");
+					pWriter = new PrintWriter(new FileWriter(path));
+					for (int i = 0; i < inhaltMatrizeA.length; i++) {
 						int[] s = inhaltMatrizeA[i];
-						for(int k = 0; k < s.length; k++) {
+						for (int k = 0; k < s.length; k++) {
 							sb.append(Integer.toString(s[k]) + ";");
 						}
 						sb.append(zeilenTrennTeichen);
 					}
-		            pWriter.println(sb);
-		        } catch (IOException ioe) {
-		            ioe.printStackTrace();
-		        } finally {
-		            if (pWriter != null)
-		                pWriter.flush();
-		            pWriter.close();
-		        } 
+					pWriter.println(sb);
+				} catch (IOException ioe) {
+					ioe.printStackTrace();
+				} finally {
+					if (pWriter != null)
+						pWriter.flush();
+					pWriter.close();
+				}
 			}
 		});
 		panel_8.add(btnNewButton_2, BorderLayout.WEST);
@@ -498,21 +516,65 @@ public class Client {
 		btnNewButton_3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				jobNummer = (int) ((Math.random()) * 1000 + 1);
-				String client = socketThread.socket.getInetAddress() + ":" + socketThread.socket.getLocalPort();
-				int worker = 3;
-				Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(jobNummer, worker, client, inhaltMatrizeA, inhaltMatrizeB);
-				socketThread.out(matrizenmull);
-				Skalarprodukt skalarmull = new Skalarprodukt(jobNummer, worker, client, inhaltVektorA,
-						inhaltVektorB);
-				socketThread.out(skalarmull);
+				jobNummer = (int) ((Math.random()) * 10000 + 1);
+				try {
+					String client = socketThread.socket.getInetAddress() + ":"
+							+ socketThread.socket.getLocalPort();
+
+					if (chckbxMatrizenmultiplikation.isSelected()) {
+						Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(
+								jobNummer, anzahlWorker, client,
+								inhaltMatrizeA, inhaltMatrizeB);
+						socketThread.out(matrizenmull);
+					}
+
+					if (chckbxSkalarprodukt.isSelected()) {
+						Skalarprodukt skalarmull = new Skalarprodukt(jobNummer,
+								anzahlWorker, client, inhaltVektorA,
+								inhaltVektorB);
+						socketThread.out(skalarmull);
+					}
+				} catch (Exception ioe) {
+					JOptionPane
+							.showMessageDialog(
+									frmVerteilteBerechnung,
+									"Es ist ein fehler aufgetreten möglicherweise besteht keine Internet-Verbindung zum Server.",
+									"Warnung", JOptionPane.WARNING_MESSAGE);
+				}
+
 			}
 		});
 		panel_8.add(btnNewButton_3, BorderLayout.CENTER);
 
 		JButton btnStatusAbfragen = new JButton("Status abfragen");
+		btnStatusAbfragen.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				Status status = new Status(jobNummer);
+				socketThread.out(status);
+			}
+		});
 		panel_8.add(btnStatusAbfragen, BorderLayout.EAST);
 
 		/* ######################################################### */
+	}
+	
+	public int getJobNummer() {
+		return jobNummer;
+	}
+	
+	public void setErgebnisMatrize(Object[][] ergebnisMatrize) {
+		this.ergebnisMatrize = ergebnisMatrize;
+		
+		String[] spalten = new String[ergebnisMatrize.length];
+		for (int k = 0; k < spalten.length; k++) {
+			spalten[k] = k + ".";
+		}
+		
+		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(
+				this.ergebnisMatrize, spalten);
+
+		table_4.setModel(tabellenmodellErgebnisMatrize);
+		table_4.repaint();
 	}
 }
