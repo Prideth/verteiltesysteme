@@ -36,6 +36,7 @@ public class Server extends JFrame {
 	private DefaultTableModel tableModelWorker;
 	private Listener listenerClient;
 	private Listener listenerWorker;
+        private Threadverwalter threadverwalter;
 	private Timer timer;
 	private int selectedRowClient;
 	private int selectedRowWorker;
@@ -79,6 +80,7 @@ public class Server extends JFrame {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		listenerWorker.start();
+                threadverwalter = new Threadverwalter(listenerClient, listenerWorker);
 
 		initialize();
 

@@ -17,6 +17,7 @@ public class Connection extends Thread {
 	public JFrame frmAdministration;
 	public Socket socket;
 	private Object inputObject;
+        private Object[] deliever = new Object[3];
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 
@@ -26,6 +27,10 @@ public class Connection extends Thread {
 			analyseInput();
 		}
 	}
+        
+        public Object[] getLastInput(){
+            return deliever;
+        }
 
 	public Connection(Socket socket) {
 		this.socket = socket;
@@ -53,13 +58,16 @@ public class Connection extends Thread {
 		frmAdministration.setLocationRelativeTo(null);
 	}
 
-	public void readInput() {
+	public Object[] readInput() {
+                deliever[1] = this;
 		inputObject = null;
 		try {
 			inputObject = input.readObject();
 		} catch (ClassNotFoundException e) {
 		} catch (IOException e) {
 		}
+                deliever[0] = inputObject;
+                return deliever;
 	}
 
 	public void analyseInput() {

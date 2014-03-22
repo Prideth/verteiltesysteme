@@ -10,7 +10,7 @@ public class Matrizenverwaltung {
 	                                      //dieses Workers gespeichert wird.
 	
 	//Konstruktor 
-	//ihm wird die aufgabe übergeben und der Client der den Auftrag stellt
+	//ihm wird die aufgabe ï¿½bergeben und der Client der den Auftrag stellt
 	public Matrizenverwaltung(Matrizenmultiplikation matrizenmultiplikation, Connection auftraggeber) {
 		super();
 		this.matrizenmultiplikation = matrizenmultiplikation;
@@ -44,7 +44,7 @@ public class Matrizenverwaltung {
 	}
 	
 	
-	//funtion die das empfangene endergebnis an den auftragssteller zurück sendet
+	//funtion die das empfangene endergebnis an den auftragssteller zurï¿½ck sendet
 	public void empfangeergebnis(int ergebnis,Connection connection){
 		boolean fertig = true;
 		for (Object k : auftraege){

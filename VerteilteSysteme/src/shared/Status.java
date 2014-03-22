@@ -2,12 +2,13 @@ package shared;
 
 import java.io.Serializable;
 
-public class Status implements Serializable {
+public class Status extends Aufgabe implements Serializable {
 	private static final long serialVersionUID = -9105381234844412376L;
 	private int jobNummer;
 	private int ergebnis;
 	
 	public Status(int jobNummer) {
+                super();
 		this.jobNummer = jobNummer;
 	}
 	
