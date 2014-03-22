@@ -12,10 +12,10 @@ import shared.Status;
  */
 public class Threadverwalter {
 
-    private Listener clientlistener;
-    private Listener workerListener;
-    private Aufgabenverwaltung aVerwaltung = null;
-    private List<Threadaufgabe> threadAufgabeList = null;
+    private volatile Listener clientlistener;
+    private volatile Listener workerListener;
+    private volatile Aufgabenverwaltung aVerwaltung = null;
+    private volatile List<Threadaufgabe> threadAufgabeList = null;
     
     
     Threadverwalter(){
@@ -32,31 +32,42 @@ public class Threadverwalter {
     
     
     private void run(){
-        while(true){
-            checkClientInput();
-            checkWorkerInput();
-        
-        }
+        new Thread() {
+            @Override public void run() {
+                while(true){
+                    checkClientInput();
+                    checkWorkerInput();
+                } 
+            }
+        }.start();
     }
     
     private void checkClientInput(){
-        for(int i= 0; i< clientlistener.getConnections(); i++){
-            Connection client = clientlistener.getConnection(i);
-            Object[] lastInput = client.getLastInput();
-            if(lastInput != null){
-                if(lastInput[0] instanceof Matrizenmultiplikation){
-                    ((Matrizenmultiplikation)lastInput[0]).setClient(client);
-                    aVerwaltung.add((Matrizenmultiplikation)lastInput[0]);
-                    threadAufgabeList.add(new Threadaufgabe((Matrizenmultiplikation)lastInput[0], new Matrixverwalter()));
-                } else if ( lastInput[0] instanceof Skalarprodukt){
-                    ((Skalarprodukt)lastInput[0]).setClient(client);
-                    aVerwaltung.add((Skalarprodukt)lastInput[0]);
-                    threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwalter()));
-                } else if ( lastInput instanceof Status){
-                    aVerwaltung.getStatus(((Status)lastInput[0]));
+        new Thread() {
+            @Override public void run() {
+                for(int i= 0; i< clientlistener.getConnections(); i++){
+                    Connection client = clientlistener.getConnection(i);
+                    Object[] lastInput = client.getLastInput();
+                    if(lastInput != null){
+                        if(lastInput[0] instanceof Matrizenmultiplikation){
+                            ((Matrizenmultiplikation)lastInput[0]).setClient(client);
+                            aVerwaltung.add((Matrizenmultiplikation)lastInput[0]);
+                            threadAufgabeList.add(new Threadaufgabe((Matrizenmultiplikation)lastInput[0], new Matrixverwalter()));
+                        } else if ( lastInput[0] instanceof Skalarprodukt){
+                            ((Skalarprodukt)lastInput[0]).setClient(client);
+                            aVerwaltung.add((Skalarprodukt)lastInput[0]);
+                            threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwalter()));
+                        } else if ( lastInput[0] instanceof Status){
+                            int status = aVerwaltung.getStatus((client));
+                            ((Status) lastInput[0]).setErgebnis(status);
+                            clientOutput(client, lastInput[0]);
+
+                        }
+                    }
                 }
             }
-        }
+       }.start();
+        
     }
     
     private void checkWorkerInput(){
@@ -65,12 +76,12 @@ public class Threadverwalter {
         }
     }
     
-    private void clientOutput(String client){
-        for(int i=0; i < clientlistener.getConnections(); i++){
-            if(clientlistener.getConnection(i).){
-                
-            }
-        }
+    private void clientOutput(Connection client, Object output){
+        client.writeMsg(output);
+    }
+    
+    private void workerOutput(){
+        
     }
     
     
