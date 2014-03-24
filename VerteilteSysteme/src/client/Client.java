@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import java.awt.Panel;
 import java.awt.FlowLayout;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -68,11 +67,11 @@ public class Client {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				// try {
-				window = new Client();
-				window.frmVerteilteBerechnung.setVisible(true);
-				// } catch (Exception e) {
-				// }
+				try {
+					window = new Client();
+					window.frmVerteilteBerechnung.setVisible(true);
+				} catch (Exception e) {
+				}
 			}
 		});
 	}
@@ -119,12 +118,20 @@ public class Client {
 		btnNewButton1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				String[][] matrizeB = null;
+				inhaltMatrizeB = null;
+				DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
+						matrizeB, null);
+
+				table.setModel(tabellenmodellMatrizeB);
+				table.repaint();
+				
 				JFileChooser chooser = new JFileChooser();
 				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					BufferedReader br = null;
-					BufferedReader br2;
+					BufferedReader br2 = null;
 					try {
 						int anzahlZeilen = 0;
 						int anzahlSpalten = 0;
@@ -191,11 +198,11 @@ public class Client {
 										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
-						if (br != null)
-							try {
-								br.close();
-							} catch (IOException e) {
-							}
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e) {
+						}
 					}
 				}
 			}
@@ -223,7 +230,7 @@ public class Client {
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					BufferedReader br = null;
-					BufferedReader br2;
+					BufferedReader br2 = null;
 					try {
 						if (inhaltMatrizeA == null) {
 							throw new Exception();
@@ -293,11 +300,11 @@ public class Client {
 										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
-						if (br != null)
-							try {
-								br.close();
-							} catch (IOException e) {
-							}
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e) {
+						}
 					}
 				}
 			}
@@ -331,11 +338,12 @@ public class Client {
 				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
+					BufferedReader br = null;
+					BufferedReader br2 = null;
 					try {
 						int anzahlZeilen = 0;
 
-						BufferedReader br = new BufferedReader(new FileReader(
-								path));
+						br = new BufferedReader(new FileReader(path));
 
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
@@ -349,8 +357,7 @@ public class Client {
 						String[] spalten = { "1." };
 						inhaltVektorA = new int[anzahlZeilen];
 
-						BufferedReader br2 = new BufferedReader(new FileReader(
-								path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
 						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
@@ -380,6 +387,12 @@ public class Client {
 										frmVerteilteBerechnung,
 										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
+					} finally {
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e1) {
+						}
 					}
 				}
 			}
@@ -406,11 +419,12 @@ public class Client {
 				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
+					BufferedReader br = null;
+					BufferedReader br2 = null;
 					try {
 						int anzahlZeilen = 0;
 
-						BufferedReader br = new BufferedReader(new FileReader(
-								path));
+						br = new BufferedReader(new FileReader(path));
 
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
@@ -424,8 +438,7 @@ public class Client {
 						String[] spalten = { "1." };
 						inhaltVektorB = new int[anzahlZeilen];
 
-						BufferedReader br2 = new BufferedReader(new FileReader(
-								path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
 						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
@@ -455,6 +468,12 @@ public class Client {
 										frmVerteilteBerechnung,
 										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
+					} finally {
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e1) {
+						}
 					}
 				}
 			}
