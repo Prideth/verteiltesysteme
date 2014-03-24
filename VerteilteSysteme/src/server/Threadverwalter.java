@@ -1,14 +1,19 @@
 package server;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import shared.Aufgabe;
+import shared.Auftrag;
 import shared.Matrizenauftrag;
 import shared.Matrizenmultiplikation;
 import shared.Matrizenverwaltung;
+import shared.Skalarauftrag;
 import shared.Skalarprodukt;
 import shared.Skalarverwaltung;
 import shared.Status;
+import worker.Worker;
 
 /**
  *
@@ -20,15 +25,18 @@ public class Threadverwalter {
     private volatile Listener workerListener;
     private volatile Aufgabenverwaltung aVerwaltung = null;
     private volatile List<Threadaufgabe> threadAufgabeList = null;
+    private volatile Workerverwaltung workerVerwaltung;
+    private volatile Threadaufgabe aufgabe;
     
     
     Threadverwalter(){
        throw new UnsupportedOperationException("It is not supported to use threadverwalter without client and workerlistener."); 
     }
     
-    Threadverwalter(Listener listenerClient, Listener listenerWorker) {
+    Threadverwalter(Listener listenerClient, Listener listenerWorker, Workerverwaltung workerVerwaltung) {
         this.clientListener = listenerClient;
         this.workerListener = listenerWorker; 
+        this.workerVerwaltung = workerVerwaltung;
         aVerwaltung = new Aufgabenverwaltung();
         threadAufgabeList= new LinkedList<Threadaufgabe>();
         run();
@@ -56,16 +64,41 @@ public class Threadverwalter {
                         if(lastInput[0] instanceof Matrizenmultiplikation){
                             ((Matrizenmultiplikation)lastInput[0]).setClient(client);
                             aVerwaltung.add((Matrizenmultiplikation)lastInput[0]);
-                            threadAufgabeList.add(new Threadaufgabe((Matrizenmultiplikation)lastInput[0], new Matrizenverwaltung((Matrizenmultiplikation)lastInput[0], client)));
+                            aufgabe = new Threadaufgabe((Matrizenmultiplikation)lastInput[0], new Matrizenverwaltung((Matrizenmultiplikation)lastInput[0], client));
+                            threadAufgabeList.add(aufgabe);
+                            Matrizenverwaltung mv = ((Matrizenverwaltung)aufgabe.getVerwalter());
+                            mv.splitt();
+                            Auftrag a = mv.getNextAuftrag();
+                            while (a != null){
+                            	Connection c = workerVerwaltung.checkFreeWorker();
+                            	if(c != null){
+                            		aufgabe.addWorker(c);
+                            		workerOutput(c, a);
+                            		a = mv.getNextAuftrag();
+                            	}
+                            }
+            
                         } else if ( lastInput[0] instanceof Skalarprodukt){
                             ((Skalarprodukt)lastInput[0]).setClient(client);
                             aVerwaltung.add((Skalarprodukt)lastInput[0]);
-                            threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwaltung((Skalarprodukt)lastInput[0],client)));
+                            aufgabe = new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwaltung((Skalarprodukt)lastInput[0], client));
+                            threadAufgabeList.add(aufgabe);
+                            Skalarverwaltung mv = ((Skalarverwaltung)aufgabe.getVerwalter());
+                            mv.splitt();
+                            Auftrag a = mv.getnextAuftrag();
+                            while (a != null){
+                            	Connection c = workerVerwaltung.checkFreeWorker();
+                            	if(c != null){
+                            		aufgabe.addWorker(c);
+                            		workerOutput(c, a);
+                            		a = mv.getnextAuftrag();
+                            	}
+                            }
+                           
                         } else if ( lastInput[0] instanceof Status){
                             int status = aVerwaltung.getStatus((client));
                             ((Status) lastInput[0]).setErgebnis(status);
                             clientOutput(client, lastInput[0]);
-
                         }
                     }
                 }
@@ -82,9 +115,38 @@ public class Threadverwalter {
                     Object[] lastInput = worker.getLastInput();
                     if(lastInput != null){
                         if(lastInput[0] instanceof Matrizenauftrag){
-                            ((Matrizenauftrag)lastInput[0]).setConnection(worker);
+                            workerVerwaltung.unlockWorker(worker);
+                            for( Iterator<Threadaufgabe> iterator = threadAufgabeList.iterator(); iterator.hasNext();){
+                            	Threadaufgabe aktuelleAufgabe;
+                                aktuelleAufgabe = iterator.next();
+                                if(aktuelleAufgabe.contains(worker)){
+                                	if(((Matrizenverwaltung)aktuelleAufgabe.getVerwalter()).empfangeergebnis(((Matrizenauftrag)lastInput[0]).getErgebnis(), worker)){
+                                		clientOutput(aktuelleAufgabe.getAufgabe().getClient(), ((Matrizenverwaltung)aktuelleAufgabe.getVerwalter()).getMatrizenmultiplikation());
+                                	}
+                                	
+                                	aktuelleAufgabe.removeWorker(worker);
+                                	
+                                }
+                            }
                             
-                        } 
+                        } else if(lastInput[0] instanceof Skalarauftrag){
+                        	workerVerwaltung.unlockWorker(worker);
+                        	for( Iterator<Threadaufgabe> iterator = threadAufgabeList.iterator(); iterator.hasNext();){
+                            	Threadaufgabe aktuelleAufgabe;
+                                aktuelleAufgabe = iterator.next();
+                                if(aktuelleAufgabe.contains(worker)){
+                                	//TODO unterscheidung end oder zwischenergebniss
+                                	Auftrag tempauftrag = ((Skalarverwaltung)aktuelleAufgabe.getVerwalter()).empfangezwischenergebnis(worker, ((Skalarauftrag)lastInput[0]));
+                                	if(tempauftrag == null){
+                                		
+                                		clientOutput(aktuelleAufgabe.getAufgabe().getClient(), tempauftrag);
+                                	}
+                                	
+                                	aktuelleAufgabe.removeWorker(worker);
+                                	
+                                }
+                            }
+                        }
                     }
                 }
             }

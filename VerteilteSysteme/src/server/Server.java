@@ -81,8 +81,9 @@ public class Server extends JFrame {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		listenerWorker.start();
-        threadverwalter = new Threadverwalter(listenerClient, listenerWorker);
         workerverwaltung = new Workerverwaltung();
+        workerverwaltung.initial(listenerWorker);
+        threadverwalter = new Threadverwalter(listenerClient, listenerWorker, workerverwaltung);
 
 		initialize();
 
@@ -185,6 +186,7 @@ public class Server extends JFrame {
 				// Aktualisiere connections
 				listenerClient.refresh();
 				listenerWorker.refresh();
+				workerverwaltung.updateWorkerList(listenerWorker);
 
 				// Aktuallisiere connectionTable
 				tableModelClient = new DefaultTableModel(

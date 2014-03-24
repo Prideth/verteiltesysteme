@@ -6,7 +6,15 @@ import server.Connection;
 public class Skalarverwaltung implements Verwalter {
 	private Connection auftraggeber; // Client von dem der Auftrag gestellt wird
 	private Skalarprodukt skalarprodukt; // Skalarprodukt das verarbeitet werden
-											// soll
+											public Skalarprodukt getSkalarprodukt() {
+		return skalarprodukt;
+	}
+
+	public void setSkalarprodukt(Skalarprodukt skalarprodukt) {
+		this.skalarprodukt = skalarprodukt;
+	}
+
+	// soll
 	private Object[] auftraege; // Teilaufgaben die erzeugt werden; ist ein
 								// Object Array,
 								// da solange ein Worker am Object arbeitet die
@@ -52,10 +60,10 @@ public class Skalarverwaltung implements Verwalter {
 		}
 	}
 	
-	public Object getnextAuftrag(){
-		Auftrag auftrag = null;
+	public Skalarauftrag getnextAuftrag(){
+		Skalarauftrag auftrag = null;
 		if (auftragscount < auftraege.length){
-			auftrag = (Auftrag) auftraege[auftragscount];
+			auftrag = (Skalarauftrag) auftraege[auftragscount];
 			auftragscount++;
 		}
 		return auftrag;	

@@ -4,6 +4,15 @@ import server.Connection;
 
 public class Matrizenverwaltung implements Verwalter{
 	private Connection auftraggeber;      //Client von dem der Auftrag gestellt wird
+	public Connection getAuftraggeber() {
+		return auftraggeber;
+	}
+
+	public Matrizenmultiplikation getMatrizenmultiplikation() {
+		return matrizenmultiplikation;
+	}
+
+
 	private Matrizenmultiplikation matrizenmultiplikation;  //
 	private Object[][] auftraege;		  //Teilaufgaben die erzeugt werden; ist ein Object Array, 
                                        	  //da solange ein Worker am Object arbeitet die Connection
@@ -52,7 +61,7 @@ public class Matrizenverwaltung implements Verwalter{
 	
 	
 	//funtion die das empfangene endergebnis an den auftragssteller zurück sendet
-	public Matrizenmultiplikation empfangeergebnis(int ergebnis,Connection connection){
+	public boolean empfangeergebnis(int ergebnis,Connection connection){
 		boolean fertig = true;
 		for (Object k : auftraege){
 			if (k == connection)
@@ -60,13 +69,8 @@ public class Matrizenverwaltung implements Verwalter{
 			if (!(k instanceof Integer))
 				fertig = false;
 		}
-		if (fertig){
-		  Object[][] ergebnismatrix = new Object[1][1];
-		  ergebnismatrix[0][0] = ergebnis;
-		  this.matrizenmultiplikation.setMatrixErgebnis(ergebnismatrix);
-		  return this.matrizenmultiplikation;
-		}
-		return null;
+		
+		return fertig;
 	}
 	
 }

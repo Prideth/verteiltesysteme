@@ -1,6 +1,5 @@
 package server;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class Aufgabenverwaltung {
     }
     
     public void removeAll(Connection client){
-        for ( Iterator<Aufgabe> iterator = aufgaben.iterator(); iterator.hasNext(); ){
+        for ( Iterator<Aufgabe> iterator = aufgaben.iterator(); iterator.hasNext();){
             Aufgabe aktuelleAufgabe;
             aktuelleAufgabe = iterator.next();
             if(aktuelleAufgabe.getClient().equals(client)){
