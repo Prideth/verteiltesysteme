@@ -50,14 +50,6 @@ public class Skalarverwaltung {
 			auftraege[i] = auftrag;
 		}
 	}
-
-	public void bearbeiten(final Connection[] workerconnections){
-		new Thread(){
-		      public void run(){
-		    	  sendauftraege(workerconnections);
-		      }
-		    }.start();
-	}
 	
 	// Function die die teilaufgaben aus dem auftreage array an die ihm
 	// übergebenen workerconnections weiter gibt
@@ -65,10 +57,11 @@ public class Skalarverwaltung {
 	// im array die workerconnection geschrieben an die die aufgabe weiter
 	// gegeben wurde
 	public void sendauftraege(Connection[] workerconnections) {
+		Connection freeworker = null;
 		while (!multiplikationfertig) {
 			while (this.currentworker <= this.maxworker) {
-				Connection freeworker;
 				for (Connection k : workerconnections) {
+					//TODO 
 					// sende freizeichenanfrage an worker
 					// if (k freier worker){
 					// freeworker = k;
@@ -78,10 +71,19 @@ public class Skalarverwaltung {
 				for (int i = 0; i < auftraege.length; i++)
 					daten = (int[]) auftraege[i];
 				Skalarauftrag auftrag = new Skalarauftrag(false, daten);
-				// sende auftrag an k
-				this.currentworker++;
+				if (freeworker != null){
+				  freeworker.writeMsg(auftrag);
+				  this.currentworker++;
+				}
 			}
 		}
+	}
+	
+	public Object getnextAuftrag(){
+		
+		return ;
+		
+		
 	}
 
 	// funktion die das ergebnis der berechnung zusammen mit der
@@ -90,11 +92,11 @@ public class Skalarverwaltung {
 	// erledigt wurde und das ergebnis an die passende stelle eingetragen
 	// nachdem alle connections durch ergebnisse ersetzt wurden, wird die
 	// sendeproduktauftrag funktion aufgerufen
-	public void empfangezwischenergebnis(Connection connection, int ergebnis) {
+	public void empfangezwischenergebnis(Connection connection, Skalarauftrag  ergebnis) {
 		boolean addieren = false;
 		for (int i = 0; i < auftraege.length; i++) {
 			if (auftraege[i] == connection) {
-				auftraege[i] = ergebnis;
+				auftraege[i] = ergebnis.getErgebnis();
 				this.currentworker--;
 			}
 		}
@@ -106,25 +108,24 @@ public class Skalarverwaltung {
 			}
 		}
 		if (addieren)
-			sendproduktauftrag();
+			sendproduktauftrag(connection);
 	}
 
 	// funktion die die teilergebnise zum zusammenrechnen an einen worker weiter
 	// gibt
-	public void sendproduktauftrag() {
+	public void sendproduktauftrag(Connection connection) {
 		int[] daten = new int[auftraege.length];
 		for (int i = 0; i < auftraege.length; i++)
 			daten[i] = (int) auftraege[i];
 		Skalarauftrag auftrag = new Skalarauftrag(true, daten);
-		// TODO sende zwischenergebnisarray an worker
+		connection.writeMsg(auftrag);
 	}
 
 	// funtion die das empfangene endergebnis an den auftragssteller zurück
 	// sendet
-	public void empfangeergebnis(int ergebnis) {
-		this.skalarprodukt.setErgebnis(ergebnis);
-
-		// TODO sende ergebnis an client
+	public void empfangegebnis(Connection connection, Skalarauftrag  ergebnis) {
+		this.skalarprodukt.setErgebnis(ergebnis.getErgebnis());
+		connection.writeMsg(this.skalarprodukt);
 	}
 
 }

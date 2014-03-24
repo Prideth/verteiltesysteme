@@ -5,11 +5,7 @@ import java.io.Serializable;
 import server.Connection;
 
 public class Skalarprodukt extends Aufgabe implements Serializable {
-	private static final long serialVersionUID = -8732035671190447859L;
-	private int[] skalarA;
-	private int[] skalarB;
-	private Object[] zwischenErgebnis;
-	private Object ergebnis;
+	
 
 	public Skalarprodukt(int id, int worker, Connection client, int[] skalarA,
 			int[] skalarB) {

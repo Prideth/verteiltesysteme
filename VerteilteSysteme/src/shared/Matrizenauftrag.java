@@ -2,7 +2,7 @@ package shared;
 
 import java.io.Serializable;
 
-public class Matrizenauftrag implements Serializable {
+public class Matrizenauftrag extends Auftrag implements Serializable {
 	private static final long serialVersionUID = 7495702832362550668L;
 	private int[] zeile;
 	private int[] spalte;
