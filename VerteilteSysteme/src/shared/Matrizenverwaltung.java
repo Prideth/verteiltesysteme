@@ -36,12 +36,6 @@ public class Matrizenverwaltung {
 	
 	}
 	
-	public void sendauftraege(Connection[] workerconnections){
-		for (Connection k :workerconnections){
-		  //sende freizeichenanfrage an worker
-		}
-	  	//TODO sende auftreage an einzelne worker
-	}
 	
 	
 	//funtion die das empfangene endergebnis an den auftragssteller zurück sendet

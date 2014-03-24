@@ -3,7 +3,7 @@ package shared;
 import server.Connection;
 
 //Klasse zum aufteilen und verarbeiten einer Skalarproduktaufgabe
-public class Skalarverwaltung {
+public class Skalarverwaltung implements Verwalter {
 	private Connection auftraggeber; // Client von dem der Auftrag gestellt wird
 	private Skalarprodukt skalarprodukt; // Skalarprodukt das verarbeitet werden
 											// soll
@@ -15,7 +15,8 @@ public class Skalarverwaltung {
 	int maxworker;
 	int currentworker = 0;
 	boolean multiplikationfertig = false;
-
+	int auftragscount = 0;
+	
 	// Konstruktor
 	// ihm wird die aufgabe übergeben und der Client der den Auftrag stellt
 	public Skalarverwaltung(Skalarprodukt skalarprodukt, Connection auftraggeber) {
@@ -51,39 +52,13 @@ public class Skalarverwaltung {
 		}
 	}
 	
-	// Function die die teilaufgaben aus dem auftreage array an die ihm
-	// übergebenen workerconnections weiter gibt
-	// nachdem eine tailaufgabe versendet wurde, wird an die stelle der aufgabe
-	// im array die workerconnection geschrieben an die die aufgabe weiter
-	// gegeben wurde
-	public void sendauftraege(Connection[] workerconnections) {
-		Connection freeworker = null;
-		while (!multiplikationfertig) {
-			while (this.currentworker <= this.maxworker) {
-				for (Connection k : workerconnections) {
-					//TODO 
-					// sende freizeichenanfrage an worker
-					// if (k freier worker){
-					// freeworker = k;
-					// }
-				}
-				int[] daten = new int[2];
-				for (int i = 0; i < auftraege.length; i++)
-					daten = (int[]) auftraege[i];
-				Skalarauftrag auftrag = new Skalarauftrag(false, daten);
-				if (freeworker != null){
-				  freeworker.writeMsg(auftrag);
-				  this.currentworker++;
-				}
-			}
-		}
-	}
-	
 	public Object getnextAuftrag(){
-		
-		return ;
-		
-		
+		Auftrag auftrag = null;
+		if (auftragscount < auftraege.length){
+			auftrag = auftraege[auftragscount];
+			auftragscount++;
+		}
+		return auftrag;	
 	}
 
 	// funktion die das ergebnis der berechnung zusammen mit der
@@ -92,8 +67,9 @@ public class Skalarverwaltung {
 	// erledigt wurde und das ergebnis an die passende stelle eingetragen
 	// nachdem alle connections durch ergebnisse ersetzt wurden, wird die
 	// sendeproduktauftrag funktion aufgerufen
-	public void empfangezwischenergebnis(Connection connection, Skalarauftrag  ergebnis) {
+	public Auftrag empfangezwischenergebnis(Connection connection, Skalarauftrag  ergebnis) {
 		boolean addieren = false;
+		Auftrag auftrag = null;
 		for (int i = 0; i < auftraege.length; i++) {
 			if (auftraege[i] == connection) {
 				auftraege[i] = ergebnis.getErgebnis();
@@ -108,24 +84,25 @@ public class Skalarverwaltung {
 			}
 		}
 		if (addieren)
-			sendproduktauftrag(connection);
-	}
+			return sendproduktauftrag();
+		return null;
+		}
 
 	// funktion die die teilergebnise zum zusammenrechnen an einen worker weiter
 	// gibt
-	public void sendproduktauftrag(Connection connection) {
+	public Auftrag sendproduktauftrag() {
 		int[] daten = new int[auftraege.length];
 		for (int i = 0; i < auftraege.length; i++)
 			daten[i] = (int) auftraege[i];
 		Skalarauftrag auftrag = new Skalarauftrag(true, daten);
-		connection.writeMsg(auftrag);
+		return (auftrag);
 	}
 
 	// funtion die das empfangene endergebnis an den auftragssteller zurück
 	// sendet
-	public void empfangegebnis(Connection connection, Skalarauftrag  ergebnis) {
+	public Skalarprodukt empfangegebnis(Connection connection, Skalarauftrag  ergebnis) {
 		this.skalarprodukt.setErgebnis(ergebnis.getErgebnis());
-		connection.writeMsg(this.skalarprodukt);
+		return this.skalarprodukt;
 	}
 
 }
