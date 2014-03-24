@@ -2,12 +2,9 @@ package shared;
 
 import java.io.Serializable;
 
+
 public class Skalarprodukt extends Aufgabe implements Serializable {
-	private static final long serialVersionUID = -8732035671190447859L;
-	private int[] skalarA;
-	private int[] skalarB;
-	private Object[] zwischenErgebnis;
-	private Object ergebnis;
+	
 
 	public Skalarprodukt(int id, int worker, String client, int[] skalarA,
 			int[] skalarB) {

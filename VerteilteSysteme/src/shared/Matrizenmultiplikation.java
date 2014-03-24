@@ -2,6 +2,7 @@ package shared;
 
 import java.io.Serializable;
 
+
 /**
  * 
  * 
