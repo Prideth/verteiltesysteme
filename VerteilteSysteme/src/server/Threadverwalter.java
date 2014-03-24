@@ -2,6 +2,7 @@ package server;
 
 import java.util.LinkedList;
 import java.util.List;
+import shared.Matrizenauftrag;
 import shared.Matrizenmultiplikation;
 import shared.Skalarprodukt;
 import shared.Status;
@@ -12,7 +13,7 @@ import shared.Status;
  */
 public class Threadverwalter {
 
-    private volatile Listener clientlistener;
+    private volatile Listener clientListener;
     private volatile Listener workerListener;
     private volatile Aufgabenverwaltung aVerwaltung = null;
     private volatile List<Threadaufgabe> threadAufgabeList = null;
@@ -23,7 +24,7 @@ public class Threadverwalter {
     }
     
     Threadverwalter(Listener listenerClient, Listener listenerWorker) {
-        this.clientlistener = listenerClient;
+        this.clientListener = listenerClient;
         this.workerListener = listenerWorker; 
         aVerwaltung = new Aufgabenverwaltung();
         threadAufgabeList= new LinkedList<Threadaufgabe>();
@@ -45,8 +46,8 @@ public class Threadverwalter {
     private void checkClientInput(){
         new Thread() {
             @Override public void run() {
-                for(int i= 0; i< clientlistener.getConnections(); i++){
-                    Connection client = clientlistener.getConnection(i);
+                for(int i= 0; i< clientListener.getConnections(); i++){
+                    Connection client = clientListener.getConnection(i);
                     Object[] lastInput = client.getLastInput();
                     if(lastInput != null){
                         if(lastInput[0] instanceof Matrizenmultiplikation){
@@ -71,17 +72,37 @@ public class Threadverwalter {
     }
     
     private void checkWorkerInput(){
-        for(int i= 0; i< workerListener.getConnections(); i++){ 
-            
-        }
+          new Thread() {
+            @Override public void run() {
+                for(int i= 0; i< workerListener.getConnections(); i++){
+                    Connection worker = workerListener.getConnection(i);
+                    Object[] lastInput = worker.getLastInput();
+                    if(lastInput != null){
+                        if(lastInput[0] instanceof Matrizenauftrag){
+                            ((Matrizenauftrag)lastInput[0]).setClient(worker);
+                            threadAufgabeList.add(new Threadaufgabe((Matrizenauftrag)lastInput[0], new Matrixverwalter()));
+                        } 
+                    }
+                }
+            }
+       }.start();
+       
     }
     
-    private void clientOutput(Connection client, Object output){
-        client.writeMsg(output);
+    private void clientOutput(final Connection client, final Object output){
+        new Thread() {
+            @Override public void run() {
+                client.writeMsg(output);
+            }
+       }.start();
     }
     
-    private void workerOutput(){
-        
+    private void workerOutput(final Connection worker, final Object output){
+      new Thread() {
+            @Override public void run() {
+                worker.writeMsg(output);
+            }
+       }.start();
     }
     
     

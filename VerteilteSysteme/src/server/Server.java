@@ -180,7 +180,7 @@ public class Server extends JFrame {
 	public void refreshTimer() {
 		timer = new Timer(refreshTime, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Aktuallisiere connections
+				// Aktualisiere connections
 				listenerClient.refresh();
 				listenerWorker.refresh();
 

@@ -2,6 +2,8 @@ package shared;
 
 import java.io.Serializable;
 
+import server.Connection;
+
 /**
  * 
  * 
@@ -14,7 +16,7 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 	private int[][] matrixB;
 	private Object[][] matrixErgebnis;
 
-	public Matrizenmultiplikation(int id, int worker, String client,
+	public Matrizenmultiplikation(int id, int worker, Connection client,
 			int[][] matrixA, int[][] matrixB) {
 		super(id, worker, client);
 		this.matrixA = matrixA;
