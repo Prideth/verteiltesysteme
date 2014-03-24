@@ -8,7 +8,8 @@ public class Matrizenverwaltung implements Verwalter{
 	private Object[][] auftraege;		  //Teilaufgaben die erzeugt werden; ist ein Object Array, 
                                        	  //da solange ein Worker am Object arbeitet die Connection
 	                                      //dieses Workers gespeichert wird.
-	
+	private int auftragszeile = 0;
+	private int auftragsspalte = 0;
 	//Konstruktor 
 	//ihm wird die aufgabe übergeben und der Client der den Auftrag stellt
 	public Matrizenverwaltung(Matrizenmultiplikation matrizenmultiplikation, Connection auftraggeber) {
@@ -33,13 +34,25 @@ public class Matrizenverwaltung implements Verwalter{
 				matrixErgebnis[i][j] = new Matrizenauftrag(zeile, spalte);
 			}
 		}
+	    this.matrizenmultiplikation.setMatrixErgebnis(matrixErgebnis);
+	}
 	
+	public Matrizenauftrag getNextAuftrag(){
+		if(auftragszeile < this.matrizenmultiplikation.getMatrixErgebnis()[0].length){
+			if (auftragsspalte < this.matrizenmultiplikation.getMatrixErgebnis().length){
+				Matrizenauftrag ma = (Matrizenauftrag) this.matrizenmultiplikation.getMatrixErgebnis()[auftragsspalte][auftragszeile];
+				auftragsspalte++;
+				return ma;
+			}
+			auftragsspalte = 0;
+			auftragszeile++;
+		}
+		return null;
 	}
 	
 	
-	
 	//funtion die das empfangene endergebnis an den auftragssteller zurück sendet
-	public void empfangeergebnis(int ergebnis,Connection connection){
+	public Matrizenmultiplikation empfangeergebnis(int ergebnis,Connection connection){
 		boolean fertig = true;
 		for (Object k : auftraege){
 			if (k == connection)
@@ -51,8 +64,9 @@ public class Matrizenverwaltung implements Verwalter{
 		  Object[][] ergebnismatrix = new Object[1][1];
 		  ergebnismatrix[0][0] = ergebnis;
 		  this.matrizenmultiplikation.setMatrixErgebnis(ergebnismatrix);
-		  //TODO sende ergebnis an client
+		  return this.matrizenmultiplikation;
 		}
+		return null;
 	}
 	
 }
