@@ -64,7 +64,6 @@ public class Client {
 	public int[] inhaltVektorB;
 	public Object[][] ergebnisMatrize;
 	private int matrizeLaenge;
-	
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -130,8 +129,7 @@ public class Client {
 						int anzahlZeilen = 0;
 						int anzahlSpalten = 0;
 						boolean firstTime = true;
-						br = new BufferedReader(new FileReader(
-								path));
+						br = new BufferedReader(new FileReader(path));
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
 							if (firstTime) {
@@ -140,11 +138,11 @@ public class Client {
 								firstTime = false;
 								anzahlZeilen = anzahlZeilen + 1;
 							} else {
-								if(anzahlSpalten != line.toString().trim()
+								if (anzahlSpalten != line.toString().trim()
 										.split(";").length) {
 									throw new Exception();
 								}
-								
+
 								anzahlZeilen = anzahlZeilen + 1;
 								System.out.print(anzahlZeilen);
 							}
@@ -162,8 +160,7 @@ public class Client {
 						}
 						inhaltMatrizeA = new int[anzahlZeilen][anzahlSpalten];
 
-						br2 = new BufferedReader(new FileReader(
-								path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
 						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
@@ -194,7 +191,7 @@ public class Client {
 										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
-						if(br != null)
+						if (br != null)
 							try {
 								br.close();
 							} catch (IOException e) {
@@ -228,14 +225,13 @@ public class Client {
 					BufferedReader br = null;
 					BufferedReader br2;
 					try {
-						if(inhaltMatrizeA == null) {
+						if (inhaltMatrizeA == null) {
 							throw new Exception();
 						}
 						int anzahlZeilen = 0;
 						int anzahlSpalten = 0;
 						boolean firstTime = true;
-						br = new BufferedReader(new FileReader(
-								path));
+						br = new BufferedReader(new FileReader(path));
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
 							if (firstTime) {
@@ -244,7 +240,7 @@ public class Client {
 								firstTime = false;
 								anzahlZeilen = anzahlZeilen + 1;
 							} else {
-								if(anzahlSpalten != line.toString().trim()
+								if (anzahlSpalten != line.toString().trim()
 										.split(";").length) {
 									throw new Exception();
 								}
@@ -252,7 +248,7 @@ public class Client {
 							}
 						}
 						br.close();
-						if(anzahlZeilen != matrizeLaenge) {
+						if (anzahlZeilen != matrizeLaenge) {
 							throw new Exception();
 						}
 
@@ -266,8 +262,7 @@ public class Client {
 						}
 						inhaltMatrizeB = new int[anzahlZeilen][anzahlSpalten];
 
-						br2 = new BufferedReader(new FileReader(
-								path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
 						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
@@ -298,7 +293,7 @@ public class Client {
 										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
-						if(br != null)
+						if (br != null)
 							try {
 								br.close();
 							} catch (IOException e) {
@@ -344,8 +339,7 @@ public class Client {
 
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
-							if(1 != line.toString().trim()
-									.split(";").length) {
+							if (1 != line.toString().trim().split(";").length) {
 								throw new Exception();
 							}
 							anzahlZeilen = anzahlZeilen + 1;
@@ -420,8 +414,7 @@ public class Client {
 
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
-							if(1 != line.toString().trim()
-									.split(";").length) {
+							if (1 != line.toString().trim().split(";").length) {
 								throw new Exception();
 							}
 							anzahlZeilen = anzahlZeilen + 1;
@@ -592,21 +585,44 @@ public class Client {
 			public void mouseClicked(MouseEvent arg0) {
 				jobNummer = (int) ((Math.random()) * 10000 + 1);
 				try {
-					String client = socketThread.socket.getInetAddress() + ":"
-							+ socketThread.socket.getLocalPort();
 
 					if (chckbxMatrizenmultiplikation.isSelected()) {
 						Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(
-								jobNummer, anzahlWorker, client,
-								inhaltMatrizeA, inhaltMatrizeB);
-						socketThread.out(matrizenmull);
+								jobNummer, anzahlWorker, null, inhaltMatrizeA,
+								inhaltMatrizeB);
+						if (socketThread.connected) {
+							socketThread.out(matrizenmull);
+						} else {
+							JOptionPane
+									.showMessageDialog(
+											frmVerteilteBerechnung,
+											"Der Matrizenauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+											"Warnung",
+											JOptionPane.WARNING_MESSAGE);
+						}
 					}
-
+				} catch (Exception ioe) {
+					JOptionPane
+							.showMessageDialog(
+									frmVerteilteBerechnung,
+									"Es ist ein fehler aufgetreten möglicherweise besteht keine Internet-Verbindung zum Server.",
+									"Warnung", JOptionPane.WARNING_MESSAGE);
+				}
+				try {
 					if (chckbxSkalarprodukt.isSelected()) {
 						Skalarprodukt skalarmull = new Skalarprodukt(jobNummer,
-								anzahlWorker, client, inhaltVektorA,
+								anzahlWorker, null, inhaltVektorA,
 								inhaltVektorB);
-						socketThread.out(skalarmull);
+						if (socketThread.connected) {
+							socketThread.out(skalarmull);
+						} else {
+							JOptionPane
+									.showMessageDialog(
+											frmVerteilteBerechnung,
+											"Der Skalarauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+											"Warnung",
+											JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				} catch (Exception ioe) {
 					JOptionPane
@@ -625,12 +641,14 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				Status status = new Status(jobNummer);
-				if(!socketThread.out(status)) {
+				if (socketThread.connected) {
+					socketThread.out(status);
+				} else {
 					JOptionPane
-					.showMessageDialog(
-							frmVerteilteBerechnung,
-							"Eine Stautsabfrage konnte nicht versendet werden, bitte versuchen Sie es erneut.",
-							"Warnung", JOptionPane.WARNING_MESSAGE);
+							.showMessageDialog(
+									frmVerteilteBerechnung,
+									"Eine Stautsabfrage konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+									"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
 			}
 		});

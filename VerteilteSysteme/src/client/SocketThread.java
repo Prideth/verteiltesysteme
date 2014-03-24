@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 import shared.Matrizenmultiplikation;
 import shared.Skalarprodukt;
 import shared.Status;
-import shared.Error;
 
 public class SocketThread extends Thread {
 	final static int PORT = 5555;
@@ -19,7 +18,7 @@ public class SocketThread extends Thread {
 	private static Object inputObject;
 	private static ObjectInputStream input;
 	private static ObjectOutputStream output;
-	private static boolean connected = false;
+	public boolean connected = false;
 
 	public SocketThread(Client client) {
 		this.client = client;
@@ -33,7 +32,7 @@ public class SocketThread extends Thread {
 		}
 	}
 	
-	private static void isConnected() {
+	private void isConnected() {
 		if (connected == false) {
 			while (true) {
 				try {
@@ -52,7 +51,7 @@ public class SocketThread extends Thread {
 		}
 	}
 
-	private static void readInput() {
+	private void readInput() {
 		inputObject = null;
 		try {
 			inputObject = input.readObject();
@@ -79,7 +78,7 @@ public class SocketThread extends Thread {
 			}
 		} else if (inputObject instanceof Status) {
 			Status ergebnisStatus = (Status) inputObject;
-			if(ergebnisStatus.getId() == client.getJobNummer()) {
+			if(ergebnisStatus.getJobNummer() == client.getJobNummer()) {
 				int ergebnis = ergebnisStatus.getErgebnis();
 				if(ergebnis == -1) {
 					JOptionPane.showMessageDialog(
@@ -119,15 +118,13 @@ public class SocketThread extends Thread {
 		}
 	}
 
-	public boolean out(Object object) {
+	public void out(Object object) {
 		try {
 			output.writeObject(object);
 			output.flush();
-			return true;
 		} catch (IOException e) {
 			close();
 			connected = false;
-			return false;
 		}
 	}
 }
