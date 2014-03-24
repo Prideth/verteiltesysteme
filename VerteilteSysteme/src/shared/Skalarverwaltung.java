@@ -108,7 +108,7 @@ public class Skalarverwaltung implements Verwalter {
 
 	// funtion die das empfangene endergebnis an den auftragssteller zurück
 	// sendet
-	public Skalarprodukt empfangegebnis(Connection connection, Skalarauftrag  ergebnis) {
+	public Skalarprodukt empfangegebnis(Skalarauftrag  ergebnis) {
 		this.skalarprodukt.setErgebnis(ergebnis.getErgebnis());
 		return this.skalarprodukt;
 	}

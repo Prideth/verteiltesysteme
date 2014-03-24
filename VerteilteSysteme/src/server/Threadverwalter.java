@@ -135,13 +135,18 @@ public class Threadverwalter {
                             	Threadaufgabe aktuelleAufgabe;
                                 aktuelleAufgabe = iterator.next();
                                 if(aktuelleAufgabe.contains(worker)){
-                                	//TODO unterscheidung end oder zwischenergebniss
-                                	Auftrag tempauftrag = ((Skalarverwaltung)aktuelleAufgabe.getVerwalter()).empfangezwischenergebnis(worker, ((Skalarauftrag)lastInput[0]));
-                                	if(tempauftrag == null){
-                                		
-                                		clientOutput(aktuelleAufgabe.getAufgabe().getClient(), tempauftrag);
+                                	if(((Skalarauftrag)lastInput[0]).isAddieren()){
+                                		Skalarprodukt endergebnis = ((Skalarverwaltung)aktuelleAufgabe.getVerwalter()).empfangegebnis((Skalarauftrag)lastInput[0]);
+                                		clientOutput(aktuelleAufgabe.getAufgabe().getClient(), endergebnis);
+                                	}else{
+                                		Auftrag tempauftrag = ((Skalarverwaltung)aktuelleAufgabe.getVerwalter()).empfangezwischenergebnis(worker, ((Skalarauftrag)lastInput[0]));
+                                		if(tempauftrag instanceof Skalarauftrag){
+                                			Connection c = workerVerwaltung.checkFreeWorker();
+                                			workerOutput(c, tempauftrag);
+                                			aktuelleAufgabe.addWorker(c);
+                                			
+                                		}
                                 	}
-                                	
                                 	aktuelleAufgabe.removeWorker(worker);
                                 	
                                 }
