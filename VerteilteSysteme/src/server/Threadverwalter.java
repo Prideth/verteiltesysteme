@@ -7,6 +7,7 @@ import shared.Matrizenauftrag;
 import shared.Matrizenmultiplikation;
 import shared.Matrizenverwaltung;
 import shared.Skalarprodukt;
+import shared.Skalarverwaltung;
 import shared.Status;
 
 /**
@@ -59,7 +60,7 @@ public class Threadverwalter {
                         } else if ( lastInput[0] instanceof Skalarprodukt){
                             ((Skalarprodukt)lastInput[0]).setClient(client);
                             aVerwaltung.add((Skalarprodukt)lastInput[0]);
-                            threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwaltung((Skalarprodukt)lastInput[0]),client));
+                            threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwaltung((Skalarprodukt)lastInput[0],client)));
                         } else if ( lastInput[0] instanceof Status){
                             int status = aVerwaltung.getStatus((client));
                             ((Status) lastInput[0]).setErgebnis(status);
@@ -81,8 +82,8 @@ public class Threadverwalter {
                     Object[] lastInput = worker.getLastInput();
                     if(lastInput != null){
                         if(lastInput[0] instanceof Matrizenauftrag){
-                            ((Matrizenauftrag)lastInput[0]).setClient(worker);
-                            threadAufgabeList.add(new Threadaufgabe((Matrizenauftrag)lastInput[0], new Matrixverwalter()));
+                            ((Matrizenauftrag)lastInput[0]).setConnection(worker);
+                            
                         } 
                     }
                 }
@@ -102,6 +103,7 @@ public class Threadverwalter {
     private void workerOutput(final Connection worker, final Object output){
       new Thread() {
             @Override public void run() {
+            	
                 worker.writeMsg(output);
             }
        }.start();

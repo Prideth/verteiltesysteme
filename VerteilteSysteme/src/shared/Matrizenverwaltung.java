@@ -2,7 +2,7 @@ package shared;
 
 import server.Connection;
 
-public class Matrizenverwaltung {
+public class Matrizenverwaltung implements Verwalter{
 	private Connection auftraggeber;      //Client von dem der Auftrag gestellt wird
 	private Matrizenmultiplikation matrizenmultiplikation;  //
 	private Object[][] auftraege;		  //Teilaufgaben die erzeugt werden; ist ein Object Array, 

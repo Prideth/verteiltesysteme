@@ -55,7 +55,7 @@ public class Skalarverwaltung implements Verwalter {
 	public Object getnextAuftrag(){
 		Auftrag auftrag = null;
 		if (auftragscount < auftraege.length){
-			auftrag = auftraege[auftragscount];
+			auftrag = (Auftrag) auftraege[auftragscount];
 			auftragscount++;
 		}
 		return auftrag;	
