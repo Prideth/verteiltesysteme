@@ -2,6 +2,7 @@
 package server;
 
 import shared.Aufgabe;
+import shared.Verwalter;
 
 /**
  *

@@ -1,11 +1,13 @@
 package shared;
 
+import server.Connection;
+
 public class Aufgabe {
 	private int id;
 	private int worker;
-	private String client;
+	private Connection client;
 
-	public Aufgabe(int id, int worker, String client) {
+	public Aufgabe(int id, int worker, Connection client) {
 		super();
 		this.id = id;
 		this.worker = worker;
@@ -20,12 +22,18 @@ public class Aufgabe {
 		return worker;
 	}
 
-	public String getClient() {
-		return client.toString();
+	public Connection getClient() {
+		return client;
 	}
+	
+	public void setClient(Connection client){
+		this.client = client;
+	}
+	
+	
         
         
-        public int getStatus() {
+    public int getStatus() {
 		return 0;
 	}
 }

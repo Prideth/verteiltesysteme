@@ -2,8 +2,10 @@ package server;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import shared.Matrizenauftrag;
 import shared.Matrizenmultiplikation;
+import shared.Matrizenverwaltung;
 import shared.Skalarprodukt;
 import shared.Status;
 
@@ -53,11 +55,11 @@ public class Threadverwalter {
                         if(lastInput[0] instanceof Matrizenmultiplikation){
                             ((Matrizenmultiplikation)lastInput[0]).setClient(client);
                             aVerwaltung.add((Matrizenmultiplikation)lastInput[0]);
-                            threadAufgabeList.add(new Threadaufgabe((Matrizenmultiplikation)lastInput[0], new Matrixverwalter()));
+                            threadAufgabeList.add(new Threadaufgabe((Matrizenmultiplikation)lastInput[0], new Matrizenverwaltung((Matrizenmultiplikation)lastInput[0], client)));
                         } else if ( lastInput[0] instanceof Skalarprodukt){
                             ((Skalarprodukt)lastInput[0]).setClient(client);
                             aVerwaltung.add((Skalarprodukt)lastInput[0]);
-                            threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwalter()));
+                            threadAufgabeList.add(new Threadaufgabe((Skalarprodukt)lastInput[0], new Skalarverwaltung((Skalarprodukt)lastInput[0]),client));
                         } else if ( lastInput[0] instanceof Status){
                             int status = aVerwaltung.getStatus((client));
                             ((Status) lastInput[0]).setErgebnis(status);
