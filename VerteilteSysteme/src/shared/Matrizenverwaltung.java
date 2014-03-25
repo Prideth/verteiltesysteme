@@ -31,8 +31,10 @@ public class Matrizenverwaltung implements Verwalter{
 		Object[][] matrixErgebnis = matrizenmultiplikation.getMatrixErgebnis();
 		int[][] MatrixA 		  = matrizenmultiplikation.getMatrixA();
 		int[][] MatrixB 		  = matrizenmultiplikation.getMatrixB();
-		
-		for( int i=0; i < matrixErgebnis.length; i++){
+		if(matrixErgebnis == null){
+		System.out.println(matrixErgebnis);
+		} else {
+		for( int i=0; i < matrixErgebnis.length ; i++){
 			for( int j=0; j<  matrixErgebnis[i].length; j++){
 				int[] spalte = new int[MatrixA.length];
 				int[] zeile  = new int[MatrixB[i].length];
@@ -44,6 +46,7 @@ public class Matrizenverwaltung implements Verwalter{
 			}
 		}
 	    this.matrizenmultiplikation.setMatrixErgebnis(matrixErgebnis);
+		}
 	}
 	
 	public Matrizenauftrag getNextAuftrag(){

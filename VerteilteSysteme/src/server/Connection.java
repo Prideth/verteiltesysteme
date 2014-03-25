@@ -17,7 +17,7 @@ public class Connection extends Thread {
 	public JFrame frmAdministration;
 	public Socket socket;
 	private Object inputObject;
-        private Object[] deliever = new Object[3];
+    private Object[] deliever = new Object[3];
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 

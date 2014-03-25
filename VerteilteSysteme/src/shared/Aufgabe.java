@@ -1,8 +1,14 @@
 package shared;
 
+import java.io.Serializable;
+
 import server.Connection;
 
-public class Aufgabe {
+public class Aufgabe implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4905853972206165719L;
 	private int id;
 	private int worker;
 	private Connection client;

@@ -19,7 +19,7 @@ public class Aufgabenverwaltung {
     
     
     public void add(Aufgabe newAufgabe){
-        removeAll(newAufgabe.getClient());
+        //removeAll(newAufgabe.getClient());
     	aufgaben.add(newAufgabe);
     }
     
