@@ -1,6 +1,9 @@
 package shared;
 
 import server.Connection;
+import shared.Auftrag;
+import shared.Skalarauftrag;
+import shared.Skalarprodukt;
 
 //Klasse zum aufteilen und verarbeiten einer Skalarproduktaufgabe
 public class Skalarverwaltung implements Verwalter {

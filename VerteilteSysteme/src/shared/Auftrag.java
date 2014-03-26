@@ -1,15 +1,13 @@
 package shared;
+
 import java.io.Serializable;
 
 import server.Connection;
 
 public class Auftrag implements Serializable {
-  /**
-	 * 
-	 */
 	private static final long serialVersionUID = -6616371758397984686L;
 
-public Connection getConnection() {
+	public Connection getConnection() {
 		return connection;
 	}
 
@@ -17,5 +15,5 @@ public Connection getConnection() {
 		this.connection = connection;
 	}
 
-private Connection connection;
+	private Connection connection;
 }

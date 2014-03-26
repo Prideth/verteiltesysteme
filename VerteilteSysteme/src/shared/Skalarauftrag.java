@@ -29,12 +29,12 @@ public class Skalarauftrag extends Auftrag implements Serializable {
 	public void setDaten(int[] daten) {
 		this.daten = daten;
 	}
-	
+
 	public int getErgebnis() {
 		return ergebnis;
 	}
-	
-	public void setErgebnis(int ergebnis){
+
+	public void setErgebnis(int ergebnis) {
 		this.ergebnis = ergebnis;
 	}
 }

@@ -82,6 +82,7 @@ public class Listener extends Thread {
 	public void refresh() {
 		for (int i = 0; i < connections.size(); i++) {
 			Connection c = (Connection) connections.elementAt(i);
+			c.writeMsg("t");
 			if (!c.isAlive()) {
 				connections.removeElementAt(i);
 			}

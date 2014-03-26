@@ -10,7 +10,7 @@ public class Workerverwaltung {
 	public void initial (Listener workerlistener){
 		int i = workerlistener.getConnections();
 		workerstatus = new Workerstatus[i];
-		for (int y = 0; y<i; y++){
+		for (int y=0; y < i; y++){
 			Workerstatus ws = new Workerstatus(workerlistener.getConnection(y));
 			workerstatus[y]= ws;
 		}
