@@ -46,7 +46,6 @@ public class Threadverwalter extends Thread {
 			Object[] lastInput = client.getLastInput();
 
 			if (lastInput[0] instanceof Matrizenmultiplikation) {
-				
 				  ((Matrizenmultiplikation) lastInput[0]).setClient(client);
 				  aVerwaltung.add((Matrizenmultiplikation) lastInput[0]);
 				  aufgabe = new Threadaufgabe( (Matrizenmultiplikation)

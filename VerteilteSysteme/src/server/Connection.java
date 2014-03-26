@@ -33,13 +33,13 @@ public class Connection extends Thread {
 	private Object lastInput;
 	private Aufgabenverwaltung aVerwaltung = null;
 	private List<Threadaufgabe> threadAufgabeList = null;
-	private Workerverwaltung workerVerwaltung;
+	private Workerverwaltung workerverwaltung;
 	private Threadaufgabe aufgabe;
 
 	public void run() {
 		while (true) {
 			readInput();
-			//analyseInput();
+			analyseInput();
 		}
 	}
 
@@ -51,8 +51,9 @@ public class Connection extends Thread {
 		deliever[0] = null;
 	}
 
-	public Connection(Socket socket) {
+	public Connection(Socket socket, Workerverwaltung workerverwaltung) {
 		this.socket = socket;
+		this.workerverwaltung = workerverwaltung;
 		try {
 			OutputStream os = socket.getOutputStream();
 			os.flush();
@@ -74,29 +75,30 @@ public class Connection extends Thread {
 		} catch (IOException e) {
 		}
 		deliever[0] = inputObject;
+		lastInput	= inputObject;
 	}
 	
 	public void analyseInput() {
-		if (lastInput instanceof Matrizenmultiplikation) {
+		if (inputObject instanceof Matrizenmultiplikation) {
 			
-			  ((Matrizenmultiplikation) lastInput).setClient(this);
-			  aVerwaltung.add((Matrizenmultiplikation) lastInput);
+			  ((Matrizenmultiplikation) inputObject).setClient(this);
+			  aVerwaltung.add((Matrizenmultiplikation) inputObject);
 			  aufgabe = new Threadaufgabe( (Matrizenmultiplikation)
-			  lastInput, new Matrizenverwaltung(
-			  (Matrizenmultiplikation) lastInput, this));
+					  inputObject, new Matrizenverwaltung(
+			  (Matrizenmultiplikation) inputObject, this));
 			  threadAufgabeList.add(aufgabe); Matrizenverwaltung mv =
 			  ((Matrizenverwaltung) aufgabe .getVerwalter()); mv.splitt();
 			  Auftrag a = mv.getNextAuftrag(); while (a != null) {
-			  Connection c = workerVerwaltung.checkFreeWorker(); if (c !=
+			  Connection c = workerverwaltung.checkFreeWorker(); if (c !=
 			  null) { aufgabe.addWorker(c); workerOutput(c, a); a =
 			  mv.getNextAuftrag(); } }
 			 
-		} else if (lastInput instanceof Skalarprodukt) {
+		} else if (inputObject instanceof Skalarprodukt) {
 
-			((Skalarprodukt) lastInput).setClient(this);
-			aVerwaltung.add((Skalarprodukt) lastInput);
-			aufgabe = new Threadaufgabe((Skalarprodukt) lastInput,
-					new Skalarverwaltung((Skalarprodukt) lastInput,
+			((Skalarprodukt) inputObject).setClient(this);
+			aVerwaltung.add((Skalarprodukt) inputObject);
+			aufgabe = new Threadaufgabe((Skalarprodukt) inputObject,
+					new Skalarverwaltung((Skalarprodukt) inputObject,
 							this));
 			threadAufgabeList.add(aufgabe);
 			Skalarverwaltung mv = ((Skalarverwaltung) aufgabe
@@ -104,7 +106,7 @@ public class Connection extends Thread {
 			mv.splitt();
 			Auftrag a = mv.getnextAuftrag();
 			while (a != null) {
-				Connection c = workerVerwaltung.checkFreeWorker();
+				Connection c = workerverwaltung.checkFreeWorker();
 				if (c != null) {
 					aufgabe.addWorker(c);
 					workerOutput(c, a);
@@ -112,19 +114,19 @@ public class Connection extends Thread {
 				}
 			}
 
-		} else if (lastInput instanceof Status) {
+		} else if (inputObject instanceof Status) {
 			int status = aVerwaltung.getStatus((this));
-			((Status) lastInput).setErgebnis(status);
-			writeMsg(lastInput);
-		}else if (lastInput instanceof Matrizenauftrag) {
-			workerVerwaltung.unlockWorker(this);
+			((Status) inputObject).setErgebnis(status);
+			writeMsg(inputObject);
+		}else if (inputObject instanceof Matrizenauftrag) {
+			workerverwaltung.unlockWorker(this);
 			for (Iterator<Threadaufgabe> iterator = threadAufgabeList
 					.iterator(); iterator.hasNext();) {
 				Threadaufgabe aktuelleAufgabe;
 				aktuelleAufgabe = iterator.next();
 				if (aktuelleAufgabe.contains(this)) {
 					if (((Matrizenverwaltung) aktuelleAufgabe.getVerwalter()).empfangeergebnis(
-							((Matrizenauftrag) lastInput)
+							((Matrizenauftrag) inputObject)
 									.getErgebnis(), this)) {
 						clientOutput(
 								aktuelleAufgabe.getAufgabe().getClient(),((Matrizenverwaltung) aktuelleAufgabe.getVerwalter()).getMatrizenmultiplikation());
@@ -135,18 +137,18 @@ public class Connection extends Thread {
 				}
 			}
 
-		} else if (lastInput instanceof Skalarauftrag) {
-			workerVerwaltung.unlockWorker(this);
+		} else if (inputObject instanceof Skalarauftrag) {
+			workerverwaltung.unlockWorker(this);
 			for (Iterator<Threadaufgabe> iterator = threadAufgabeList
 					.iterator(); iterator.hasNext();) {
 				Threadaufgabe aktuelleAufgabe;
 				aktuelleAufgabe = iterator.next();
 				if (aktuelleAufgabe.contains(this)) {
-					if (((Skalarauftrag) lastInput)
+					if (((Skalarauftrag) inputObject)
 							.isAddieren()) {
 						Skalarprodukt endergebnis = ((Skalarverwaltung) aktuelleAufgabe
 								.getVerwalter())
-								.empfangegebnis((Skalarauftrag) lastInput);
+								.empfangegebnis((Skalarauftrag) inputObject);
 						clientOutput(aktuelleAufgabe
 								.getAufgabe().getClient(),
 								endergebnis);
@@ -155,9 +157,9 @@ public class Connection extends Thread {
 								.getVerwalter())
 								.empfangezwischenergebnis(
 										this,
-										((Skalarauftrag) lastInput));
+										((Skalarauftrag) inputObject));
 						if (tempauftrag instanceof Skalarauftrag) {
-							Connection c = workerVerwaltung
+							Connection c = workerverwaltung
 									.checkFreeWorker();
 							workerOutput(c, tempauftrag);
 							aktuelleAufgabe.addWorker(c);
