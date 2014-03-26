@@ -36,7 +36,8 @@ public class Server extends JFrame {
 	private DefaultTableModel tableModelWorker;
 	private Listener listenerClient;
 	private Listener listenerWorker;
-        private Threadverwalter threadverwalter;
+    private Threadverwalter threadverwalter;
+    private Workerverwaltung workerverwaltung;
 	private Timer timer;
 	private int selectedRowClient;
 	private int selectedRowWorker;
@@ -80,7 +81,9 @@ public class Server extends JFrame {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		listenerWorker.start();
-                threadverwalter = new Threadverwalter(listenerClient, listenerWorker);
+        workerverwaltung = new Workerverwaltung();
+        workerverwaltung.initial(listenerWorker);
+        threadverwalter = new Threadverwalter(listenerClient, listenerWorker, workerverwaltung);
 
 		initialize();
 
@@ -180,9 +183,10 @@ public class Server extends JFrame {
 	public void refreshTimer() {
 		timer = new Timer(refreshTime, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Aktuallisiere connections
+				// Aktualisiere connections
 				listenerClient.refresh();
 				listenerWorker.refresh();
+				workerverwaltung.updateWorkerList(listenerWorker);
 
 				// Aktuallisiere connectionTable
 				tableModelClient = new DefaultTableModel(

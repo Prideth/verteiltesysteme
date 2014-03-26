@@ -2,6 +2,8 @@ package shared;
 
 import java.io.Serializable;
 
+import server.Connection;
+
 /**
  * 
  * 
@@ -14,11 +16,17 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 	private int[][] matrixB;
 	private Object[][] matrixErgebnis;
 
-	public Matrizenmultiplikation(int id, int worker, String client,
+	public Matrizenmultiplikation(int id, int worker, Connection client,
 			int[][] matrixA, int[][] matrixB) {
 		super(id, worker, client);
 		this.matrixA = matrixA;
 		this.matrixB = matrixB;
+		this.matrixErgebnis = new Object[matrixA.length][matrixB[0].length];
+		for(int i = 0; i < matrixA.length; i++){
+			for(int j=0; j < matrixB[i].length; j++){
+				matrixErgebnis[i][j] = new EmptyObject();
+			}
+		}
 	}
 
 	public int[][] getMatrixA() {
@@ -38,6 +46,8 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 	}
 
 	public Object[][] getMatrixErgebnis() {
+		if(matrixErgebnis == null)
+			System.exit( 0 );
 		return matrixErgebnis;
 	}
 

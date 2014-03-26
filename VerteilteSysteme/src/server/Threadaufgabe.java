@@ -1,12 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package server;
 
+import java.util.List;
+
 import shared.Aufgabe;
+import shared.Verwalter;
 
 /**
  *
@@ -15,17 +13,39 @@ import shared.Aufgabe;
 public class Threadaufgabe {
     private Aufgabe aufgabe;
     private Verwalter verwalter;
+    private List<Connection> worker;
     
     public Threadaufgabe(Aufgabe aufgabe, Verwalter verwalter){
         this.aufgabe = aufgabe;
         this.verwalter = verwalter;
     }
     
-    public Aufgabe getAzfgabe(){
+    public Aufgabe getAufgabe(){
         return aufgabe;
     }
     
     public Verwalter getVerwalter(){
         return verwalter;
     }
+
+	public List<Connection> getWorker() {
+		return worker;
+	}
+
+	public void addWorker(Connection worker) {
+		this.worker.add(worker);
+	}
+	
+	public void removeWorker(Connection worker){
+		this.worker.remove(worker);
+	}
+	
+	public boolean contains(Connection worker){
+		if(this.worker.contains(worker)){
+			return true;
+		}
+		return false;
+	}
+    
+    
 }

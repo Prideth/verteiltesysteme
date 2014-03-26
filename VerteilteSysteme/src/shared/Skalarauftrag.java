@@ -2,7 +2,7 @@ package shared;
 
 import java.io.Serializable;
 
-public class Skalarauftrag implements Serializable {
+public class Skalarauftrag extends Auftrag implements Serializable {
 	private static final long serialVersionUID = 4245958107417693443L;
 	private boolean addieren = false;
 	private int[] daten;

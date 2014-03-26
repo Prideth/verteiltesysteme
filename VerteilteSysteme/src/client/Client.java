@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import java.awt.Panel;
 import java.awt.FlowLayout;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,26 +42,27 @@ import java.awt.event.ActionEvent;
 public class Client {
 
 	private static Client window;
-	private JFrame frmVerteilteBerechnung;
+	private static SocketThread socketThread;
+
+	private int anzahlWorker;
 	private JTable table;
 	private JTable table_1;
 	private JTable table_2;
 	private JTable table_3;
 	private JTextField textField;
 	private JTable table_4;
-	private JTextField textField_1;
 	private JCheckBox chckbxMatrizenmultiplikation;
 	private JCheckBox chckbxSkalarprodukt;
-	private int anzahlWorker;
 
-	private SocketThread socketThread;
-
+	public JFrame frmVerteilteBerechnung;
+	public JTextField textField_1;
 	public int jobNummer;
 	public int[][] inhaltMatrizeA;
 	public int[][] inhaltMatrizeB;
 	public int[] inhaltVektorA;
 	public int[] inhaltVektorB;
 	public Object[][] ergebnisMatrize;
+	private int matrizeLaenge;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -71,7 +71,6 @@ public class Client {
 					window = new Client();
 					window.frmVerteilteBerechnung.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		});
@@ -119,12 +118,20 @@ public class Client {
 		btnNewButton1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				String[][] matrizeB = null;
+				inhaltMatrizeB = null;
+				DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
+						matrizeB, null);
 
+				table.setModel(tabellenmodellMatrizeB);
+				table.repaint();
+				
 				JFileChooser chooser = new JFileChooser();
-				chooser.showDialog(null, "Datei auswählen");
-				String path = chooser.getSelectedFile().getAbsolutePath();
-				if (path != null) {
-					BufferedReader br;
+				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					BufferedReader br = null;
+					BufferedReader br2 = null;
 					try {
 						int anzahlZeilen = 0;
 						int anzahlSpalten = 0;
@@ -133,12 +140,26 @@ public class Client {
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
 							if (firstTime) {
-								anzahlSpalten = line.toString().split(";").length;
+								anzahlSpalten = line.toString().trim()
+										.split(";").length;
 								firstTime = false;
+								anzahlZeilen = anzahlZeilen + 1;
+							} else {
+								if (anzahlSpalten != line.toString().trim()
+										.split(";").length) {
+									throw new Exception();
+								}
+
+								anzahlZeilen = anzahlZeilen + 1;
+								System.out.print(anzahlZeilen);
 							}
-							anzahlZeilen = anzahlZeilen + 1;
 						}
 						br.close();
+						matrizeLaenge = anzahlSpalten;
+
+						if (anzahlSpalten >= 200 || anzahlZeilen >= 200) {
+							throw new Exception();
+						}
 
 						String[] spalten = new String[anzahlSpalten];
 						for (int k = 0; k < spalten.length; k++) {
@@ -146,17 +167,17 @@ public class Client {
 						}
 						inhaltMatrizeA = new int[anzahlZeilen][anzahlSpalten];
 
-						br = new BufferedReader(new FileReader(path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
-						for (String line = br.readLine(); line != null; line = br
+						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
-							String[] s = line.toString().split(";");
+							String[] s = line.toString().trim().split(";");
 							for (int j = 0; j < anzahlSpalten; j++) {
 								inhaltMatrizeA[i][j] = Integer.parseInt(s[j]);
 							}
 							i++;
 						}
-						br.close();
+						br2.close();
 
 						String[][] matrizeA = new String[anzahlZeilen][anzahlSpalten];
 						for (int j = 0; j < anzahlZeilen; j++) {
@@ -170,12 +191,18 @@ public class Client {
 
 						table_1.setModel(tabellenmodellMatrizeA);
 						table_1.repaint();
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} catch (Exception e) {
+						JOptionPane
+								.showMessageDialog(
+										frmVerteilteBerechnung,
+										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Error", JOptionPane.ERROR_MESSAGE);
+					} finally {
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e) {
+						}
 					}
 				}
 			}
@@ -198,13 +225,16 @@ public class Client {
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-
 				JFileChooser chooser = new JFileChooser();
-				chooser.showDialog(null, "Datei auswählen");
-				String path = chooser.getSelectedFile().getAbsolutePath();
-				if (path != null) {
-					BufferedReader br;
+				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					BufferedReader br = null;
+					BufferedReader br2 = null;
 					try {
+						if (inhaltMatrizeA == null) {
+							throw new Exception();
+						}
 						int anzahlZeilen = 0;
 						int anzahlSpalten = 0;
 						boolean firstTime = true;
@@ -212,12 +242,26 @@ public class Client {
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
 							if (firstTime) {
-								anzahlSpalten = line.toString().split(";").length;
+								anzahlSpalten = line.toString().trim()
+										.split(";").length;
 								firstTime = false;
+								anzahlZeilen = anzahlZeilen + 1;
+							} else {
+								if (anzahlSpalten != line.toString().trim()
+										.split(";").length) {
+									throw new Exception();
+								}
+								anzahlZeilen = anzahlZeilen + 1;
 							}
-							anzahlZeilen = anzahlZeilen + 1;
 						}
 						br.close();
+						if (anzahlZeilen != matrizeLaenge) {
+							throw new Exception();
+						}
+
+						if (anzahlSpalten >= 200 || anzahlZeilen >= 200) {
+							throw new Exception();
+						}
 
 						String[] spalten = new String[anzahlSpalten];
 						for (int k = 0; k < spalten.length; k++) {
@@ -225,17 +269,17 @@ public class Client {
 						}
 						inhaltMatrizeB = new int[anzahlZeilen][anzahlSpalten];
 
-						br = new BufferedReader(new FileReader(path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
-						for (String line = br.readLine(); line != null; line = br
+						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
-							String[] s = line.toString().split(";");
+							String[] s = line.toString().trim().split(";");
 							for (int j = 0; j < anzahlSpalten; j++) {
 								inhaltMatrizeB[i][j] = Integer.parseInt(s[j]);
 							}
 							i++;
 						}
-						br.close();
+						br2.close();
 
 						String[][] matrizeB = new String[anzahlZeilen][anzahlSpalten];
 						for (int j = 0; j < anzahlZeilen; j++) {
@@ -249,12 +293,18 @@ public class Client {
 
 						table.setModel(tabellenmodellMatrizeB);
 						table.repaint();
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					} catch (Exception e) {
+						JOptionPane
+								.showMessageDialog(
+										frmVerteilteBerechnung,
+										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Error", JOptionPane.ERROR_MESSAGE);
+					} finally {
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e) {
+						}
 					}
 				}
 			}
@@ -285,10 +335,11 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				chooser.showDialog(null, "Datei auswählen");
-				String path = chooser.getSelectedFile().getAbsolutePath();
-				if (path != null) {
-					BufferedReader br;
+				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					BufferedReader br = null;
+					BufferedReader br2 = null;
 					try {
 						int anzahlZeilen = 0;
 
@@ -296,6 +347,9 @@ public class Client {
 
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
+							if (1 != line.toString().trim().split(";").length) {
+								throw new Exception();
+							}
 							anzahlZeilen = anzahlZeilen + 1;
 						}
 						br.close();
@@ -303,9 +357,9 @@ public class Client {
 						String[] spalten = { "1." };
 						inhaltVektorA = new int[anzahlZeilen];
 
-						br = new BufferedReader(new FileReader(path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
-						for (String line = br.readLine(); line != null; line = br
+						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
 							String[] s = line.toString().split(";");
 							for (int j = 0; j < 1; j++) {
@@ -313,7 +367,7 @@ public class Client {
 							}
 							i++;
 						}
-						br.close();
+						br2.close();
 
 						String[][] vektorA = new String[anzahlZeilen][1];
 						for (int j = 0; j < anzahlZeilen; j++) {
@@ -327,12 +381,18 @@ public class Client {
 
 						table_2.setModel(tabellenmodellVektorA);
 						table_2.repaint();
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					} catch (Exception e1) {
+						JOptionPane
+								.showMessageDialog(
+										frmVerteilteBerechnung,
+										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Error", JOptionPane.ERROR_MESSAGE);
+					} finally {
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e1) {
+						}
 					}
 				}
 			}
@@ -356,18 +416,21 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				chooser.showDialog(null, "Datei auswählen");
-				String path = chooser.getSelectedFile().getAbsolutePath();
-				if (path != null) {
-					BufferedReader br;
+				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
+					String path = chooser.getSelectedFile().getAbsolutePath();
+					BufferedReader br = null;
+					BufferedReader br2 = null;
 					try {
 						int anzahlZeilen = 0;
-						int anzahlSpalten = 1;
 
 						br = new BufferedReader(new FileReader(path));
 
 						for (String line = br.readLine(); line != null; line = br
 								.readLine()) {
+							if (1 != line.toString().trim().split(";").length) {
+								throw new Exception();
+							}
 							anzahlZeilen = anzahlZeilen + 1;
 						}
 						br.close();
@@ -375,9 +438,9 @@ public class Client {
 						String[] spalten = { "1." };
 						inhaltVektorB = new int[anzahlZeilen];
 
-						br = new BufferedReader(new FileReader(path));
+						br2 = new BufferedReader(new FileReader(path));
 						int i = 0;
-						for (String line = br.readLine(); line != null; line = br
+						for (String line = br2.readLine(); line != null; line = br2
 								.readLine()) {
 							String[] s = line.toString().split(";");
 							for (int j = 0; j < 1; j++) {
@@ -385,13 +448,13 @@ public class Client {
 							}
 							i++;
 						}
-						br.close();
+						br2.close();
 
-						String[][] vektorB = new String[anzahlZeilen][anzahlSpalten];
+						String[][] vektorB = new String[anzahlZeilen][1];
 						for (int j = 0; j < anzahlZeilen; j++) {
-							for (int k = 0; k < anzahlSpalten; k++) {
+							for (int k = 0; k < 1; k++) {
 								vektorB[j][k] = String
-										.valueOf(inhaltVektorA[j]);
+										.valueOf(inhaltVektorB[j]);
 							}
 						}
 						DefaultTableModel tabellenmodellVektorB = new DefaultTableModel(
@@ -399,12 +462,18 @@ public class Client {
 
 						table_3.setModel(tabellenmodellVektorB);
 						table_3.repaint();
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					} catch (Exception e1) {
+						JOptionPane
+								.showMessageDialog(
+										frmVerteilteBerechnung,
+										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Error", JOptionPane.ERROR_MESSAGE);
+					} finally {
+						try {
+							br.close();
+							br2.close();
+						} catch (IOException e1) {
+						}
 					}
 				}
 			}
@@ -435,7 +504,22 @@ public class Client {
 		textField.setText("1");
 		textField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				anzahlWorker = Integer.valueOf(textField.getText().trim());
+				try {
+					if (Integer.valueOf(textField.getText().trim()) <= 0) {
+						JOptionPane.showMessageDialog(null,
+								"Bitte gib eine Zahl größer als 0 ein.",
+								"Error", JOptionPane.ERROR_MESSAGE);
+					} else {
+						anzahlWorker = Integer.valueOf(textField.getText()
+								.trim());
+					}
+				} catch (Exception e) {
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"Fehler bei der Eingabe. Geben Sie nur Zahlen ein.",
+									"Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		panel_5.add(textField, BorderLayout.CENTER);
@@ -484,29 +568,31 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				chooser.showDialog(null, "Datei auswählen");
-				String path = chooser.getSelectedFile().getPath();
+				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
+					String path = chooser.getSelectedFile().getPath();
 
-				String zeilenTrennTeichen = System
-						.getProperty("line.separator");
-				PrintWriter pWriter = null;
-				try {
-					StringBuffer sb = new StringBuffer("");
-					pWriter = new PrintWriter(new FileWriter(path));
-					for (int i = 0; i < inhaltMatrizeA.length; i++) {
-						int[] s = inhaltMatrizeA[i];
-						for (int k = 0; k < s.length; k++) {
-							sb.append(Integer.toString(s[k]) + ";");
+					String zeilenTrennTeichen = System
+							.getProperty("line.separator");
+					PrintWriter pWriter = null;
+					try {
+						StringBuffer sb = new StringBuffer("");
+						pWriter = new PrintWriter(new FileWriter(path));
+						for (int i = 0; i < inhaltMatrizeA.length; i++) {
+							int[] s = inhaltMatrizeA[i];
+							for (int k = 0; k < s.length; k++) {
+								sb.append(Integer.toString(s[k]) + ";");
+							}
+							sb.append(zeilenTrennTeichen);
 						}
-						sb.append(zeilenTrennTeichen);
+						pWriter.println(sb);
+					} catch (IOException ioe) {
+						ioe.printStackTrace();
+					} finally {
+						if (pWriter != null)
+							pWriter.flush();
+						pWriter.close();
 					}
-					pWriter.println(sb);
-				} catch (IOException ioe) {
-					ioe.printStackTrace();
-				} finally {
-					if (pWriter != null)
-						pWriter.flush();
-					pWriter.close();
 				}
 			}
 		});
@@ -518,21 +604,44 @@ public class Client {
 			public void mouseClicked(MouseEvent arg0) {
 				jobNummer = (int) ((Math.random()) * 10000 + 1);
 				try {
-					String client = socketThread.socket.getInetAddress() + ":"
-							+ socketThread.socket.getLocalPort();
 
 					if (chckbxMatrizenmultiplikation.isSelected()) {
 						Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(
-								jobNummer, anzahlWorker, client,
-								inhaltMatrizeA, inhaltMatrizeB);
-						socketThread.out(matrizenmull);
+								jobNummer, anzahlWorker, null, inhaltMatrizeA,
+								inhaltMatrizeB);
+						if (socketThread.connected) {
+							socketThread.out(matrizenmull);
+						} else {
+							JOptionPane
+									.showMessageDialog(
+											frmVerteilteBerechnung,
+											"Der Matrizenauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+											"Warnung",
+											JOptionPane.WARNING_MESSAGE);
+						}
 					}
-
+				} catch (Exception ioe) {
+					JOptionPane
+							.showMessageDialog(
+									frmVerteilteBerechnung,
+									"Es ist ein fehler aufgetreten möglicherweise besteht keine Internet-Verbindung zum Server.",
+									"Warnung", JOptionPane.WARNING_MESSAGE);
+				}
+				try {
 					if (chckbxSkalarprodukt.isSelected()) {
 						Skalarprodukt skalarmull = new Skalarprodukt(jobNummer,
-								anzahlWorker, client, inhaltVektorA,
+								anzahlWorker, null, inhaltVektorA,
 								inhaltVektorB);
-						socketThread.out(skalarmull);
+						if (socketThread.connected) {
+							socketThread.out(skalarmull);
+						} else {
+							JOptionPane
+									.showMessageDialog(
+											frmVerteilteBerechnung,
+											"Der Skalarauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+											"Warnung",
+											JOptionPane.WARNING_MESSAGE);
+						}
 					}
 				} catch (Exception ioe) {
 					JOptionPane
@@ -551,26 +660,34 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				Status status = new Status(jobNummer);
-				socketThread.out(status);
+				if (socketThread.connected) {
+					socketThread.out(status);
+				} else {
+					JOptionPane
+							.showMessageDialog(
+									frmVerteilteBerechnung,
+									"Eine Stautsabfrage konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+									"Warnung", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		panel_8.add(btnStatusAbfragen, BorderLayout.EAST);
 
 		/* ######################################################### */
 	}
-	
+
 	public int getJobNummer() {
 		return jobNummer;
 	}
-	
+
 	public void setErgebnisMatrize(Object[][] ergebnisMatrize) {
 		this.ergebnisMatrize = ergebnisMatrize;
-		
+
 		String[] spalten = new String[ergebnisMatrize.length];
 		for (int k = 0; k < spalten.length; k++) {
 			spalten[k] = k + ".";
 		}
-		
+
 		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(
 				this.ergebnisMatrize, spalten);
 
