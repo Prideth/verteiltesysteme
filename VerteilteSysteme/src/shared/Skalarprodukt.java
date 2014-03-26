@@ -62,6 +62,8 @@ public class Skalarprodukt extends Aufgabe implements Serializable {
 	public int getStatus() {
 		double gesamt = 0;
 		double fertig = 0;
+		if(zwischenErgebnis == null)
+			return 0;
 		for (int i = 0; i < zwischenErgebnis.length; i++) {
 			if (zwischenErgebnis[i] instanceof Integer)
 				fertig++;
