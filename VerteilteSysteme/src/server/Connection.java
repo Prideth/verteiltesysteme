@@ -47,7 +47,7 @@ public class Connection extends Thread {
 		deliever[0] = null;
 	}
 
-	public Connection(Socket socket, Workerverwaltung workerverwaltung) {
+	public Connection(Socket socket) {
 		this.socket = socket;
 		this.workerverwaltung = workerverwaltung;
 		try {

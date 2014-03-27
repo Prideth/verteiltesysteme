@@ -11,15 +11,26 @@ public class Listener extends Thread {
 	private int port;
 	private ServerSocket serverSocketOne;
 	private Workerverwaltung workerverwaltung;
+	private Threadverwalter threadVerwalter;
 
-	public Listener(int port, int maxConnections, Workerverwaltung workerverwaltung) throws IOException {
+	public Listener(int port, int maxConnections, Threadverwalter threadVerwalter) throws IOException {
 		if (port != 0) {
 			serverSocketOne = new ServerSocket(port);
 		}
 
 		this.port = port;
 		this.maxConnections = maxConnections;
-		this.workerverwaltung = workerverwaltung;
+		this.threadVerwalter = threadVerwalter;
+		connections = new Vector<Connection>(maxConnections);
+	}
+	
+	public Listener(int port, int maxConnections) throws IOException {
+		if (port != 0) {
+			serverSocketOne = new ServerSocket(port);
+		}
+
+		this.port = port;
+		this.maxConnections = maxConnections;
 		connections = new Vector<Connection>(maxConnections);
 	}
 
@@ -30,7 +41,10 @@ public class Listener extends Thread {
 			} catch (Exception e) {
 			}
 		} else {
-			Connection c = new Connection(s, workerverwaltung);
+			Connection c;
+			if(threadVerwalter == null)
+				c = new Connection(s);
+			c = new Connection(s, threadVerwalter);
 			connections.addElement(c);
 			c.start();
 		}
