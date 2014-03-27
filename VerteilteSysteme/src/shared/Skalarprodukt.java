@@ -58,7 +58,7 @@ public class Skalarprodukt extends Aufgabe implements Serializable {
 	public void setErgebnis(Object ergebnis) {
 		this.ergebnis = ergebnis;
 	}
-<<<<<<< HEAD
+
         
         @Override
         public int getStatus(){
@@ -76,23 +76,5 @@ public class Skalarprodukt extends Aufgabe implements Serializable {
             gesamt++;
             return (int) (fertig*100 /gesamt);
         }
-=======
 
-	@Override
-	public int getStatus() {
-		double gesamt = 0;
-		double fertig = 0;
-		if(zwischenErgebnis == null)
-			return 0;
-		for (int i = 0; i < zwischenErgebnis.length; i++) {
-			if (zwischenErgebnis[i] instanceof Integer)
-				fertig++;
-			gesamt++;
-		}
-		if (ergebnis instanceof Integer)
-			fertig++;
-		gesamt++;
-		return (int) (fertig * 100 / gesamt);
-	}
->>>>>>> origin/develop
 }

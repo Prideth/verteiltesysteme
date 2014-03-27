@@ -75,10 +75,8 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 		double fertig = 0;
 		if(matrixErgebnis == null)
 			return 0;
-<<<<<<< HEAD
 		
-=======
->>>>>>> origin/develop
+
 		
 		for (int i = 0; i < matrixErgebnis.length; i++) {
 			for (int j = 0; j < matrixErgebnis[i].length; j++) {
