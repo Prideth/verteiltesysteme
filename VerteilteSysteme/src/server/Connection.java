@@ -2,24 +2,42 @@ package server;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+
 import javax.swing.JFrame;
 
-import java.net.Socket;
+import shared.Auftrag;
+import shared.Matrizenauftrag;
+import shared.Matrizenmultiplikation;
+import shared.Matrizenverwaltung;
+import shared.Skalarauftrag;
+import shared.Skalarprodukt;
+import shared.Skalarverwaltung;
+import shared.Status;
 
+import java.net.Socket;
+import java.util.Iterator;
 
 public class Connection extends Thread {
 	public JFrame frmAdministration;
 	public Socket socket;
 	private Object inputObject;
-    private Object[] deliever = new Object[3];
-	private ObjectInputStream input;
-	private ObjectOutputStream output;
+	private Object[] deliever = new Object[3];
+	private static ObjectInputStream input;
+	private static ObjectOutputStream output;
+<<<<<<< HEAD
+	private Threadverwalter threadverwalter;
+=======
+	private Object lastInput;
+	private Aufgabenverwaltung aVerwaltung = null;
+	private List<Threadaufgabe> threadAufgabeList = null;
+	private Workerverwaltung workerverwaltung;
+	private Threadaufgabe aufgabe;
+>>>>>>> origin/develop
 
 	public void run() {
 		while (true) {
@@ -27,69 +45,238 @@ public class Connection extends Thread {
 			analyseInput();
 		}
 	}
-        
-        public Object[] getLastInput(){
-            return deliever;
-        }
 
-	public Connection(Socket socket) {
+	public Object[] getLastInput() {
+		return deliever;
+	}
+	
+	public void setLastInput() {
+		deliever[0] = null;
+	}
+
+	public Connection(Socket socket, Workerverwaltung workerverwaltung) {
 		this.socket = socket;
+		this.workerverwaltung = workerverwaltung;
 		try {
 			OutputStream os = socket.getOutputStream();
 			os.flush();
 			InputStream is = socket.getInputStream();
-			
-			
+
 			output = new ObjectOutputStream(new BufferedOutputStream(os));
 			output.flush();
 			input = new ObjectInputStream(new BufferedInputStream(is));
 		} catch (IOException e) {
 		}
+	}
+	
+	public Connection(Socket socket, Threadverwalter threadverwalter) {
+		this.socket = socket;
+		this.threadverwalter = threadverwalter;
+		try {
+			OutputStream os = socket.getOutputStream();
+			os.flush();
+			InputStream is = socket.getInputStream();
 
-		initializeGUI();
+			output = new ObjectOutputStream(new BufferedOutputStream(os));
+			output.flush();
+			input = new ObjectInputStream(new BufferedInputStream(is));
+		} catch (IOException e) {
+		}
 	}
 
-	private void initializeGUI() {
-		frmAdministration = new JFrame();
-		frmAdministration.setTitle("Administration - "
-				+ socket.getInetAddress().getHostAddress());
-		frmAdministration.setResizable(true);
-		frmAdministration.setBounds(100, 100, 720, 480);
-		frmAdministration.setLocationRelativeTo(null);
-	}
-
-	public Object[] readInput() {
-                deliever[1] = this;
+	public void readInput() {
+		deliever[1] = this;
 		inputObject = null;
 		try {
 			inputObject = input.readObject();
 		} catch (ClassNotFoundException e) {
 		} catch (IOException e) {
 		}
-                deliever[0] = inputObject;
-                return deliever;
+		deliever[0] = inputObject;
+		lastInput	= inputObject;
 	}
-
+	
 	public void analyseInput() {
-		/*if (inputObject instanceof SerializedFile) {
-			SerializedFile file = (SerializedFile) inputObject;
+<<<<<<< HEAD
+		if(inputObject == null)
+			return;
+		
+		if (inputObject instanceof Matrizenmultiplikation) {
+			
+			 ((Matrizenmultiplikation) inputObject).setClient(this);
+			 threadverwalter.aVerwaltung.add((Matrizenmultiplikation) inputObject);
+			 threadverwalter.aufgabe = threadverwalter.setAufgabe(new Threadaufgabe( (Matrizenmultiplikation)
+					 inputObject, new Matrizenverwaltung(
+			 (Matrizenmultiplikation) inputObject, this)));
+			 threadverwalter.threadAufgabeList.add(threadverwalter.aufgabe); Matrizenverwaltung mv =
+			 ((Matrizenverwaltung) threadverwalter.aufgabe .getVerwalter()); mv.splitt();
+			 Auftrag a = mv.getNextAuftrag(); while (a != null) {
+			 Connection c = threadverwalter.workerVerwaltung.checkFreeWorker(); if (c !=
+			 null) { threadverwalter.aufgabe.addWorker(c); workerOutput(c, a); a =
+			 mv.getNextAuftrag(); } }
+=======
+		if (inputObject instanceof Matrizenmultiplikation) {
+			
+			  ((Matrizenmultiplikation) inputObject).setClient(this);
+			  aVerwaltung.add((Matrizenmultiplikation) inputObject);
+			  aufgabe = new Threadaufgabe( (Matrizenmultiplikation)
+					  inputObject, new Matrizenverwaltung(
+			  (Matrizenmultiplikation) inputObject, this));
+			  threadAufgabeList.add(aufgabe); Matrizenverwaltung mv =
+			  ((Matrizenverwaltung) aufgabe .getVerwalter()); mv.splitt();
+			  Auftrag a = mv.getNextAuftrag(); while (a != null) {
+			  Connection c = workerverwaltung.checkFreeWorker(); if (c !=
+			  null) { aufgabe.addWorker(c); workerOutput(c, a); a =
+			  mv.getNextAuftrag(); } }
+>>>>>>> origin/develop
+			 
+		} else if (inputObject instanceof Skalarprodukt) {
 
-			String userDirectory = System.getProperty("user.home")
-					+ "\\Desktop\\Downloads\\";
-			File f = new File(userDirectory);
-			if (f.isDirectory()) {
-			} else {
-				f.mkdir();
+			((Skalarprodukt) inputObject).setClient(this);
+<<<<<<< HEAD
+			//threadverwalter.aVerwaltung.add((Skalarprodukt) inputObject);
+			threadverwalter.aufgabe = new Threadaufgabe((Skalarprodukt) inputObject,
+					new Skalarverwaltung((Skalarprodukt) inputObject,
+							this));
+			threadverwalter.threadAufgabeList.add(threadverwalter.aufgabe);
+			Skalarverwaltung mv = ((Skalarverwaltung) threadverwalter.aufgabe
+=======
+			aVerwaltung.add((Skalarprodukt) inputObject);
+			aufgabe = new Threadaufgabe((Skalarprodukt) inputObject,
+					new Skalarverwaltung((Skalarprodukt) inputObject,
+							this));
+			threadAufgabeList.add(aufgabe);
+			Skalarverwaltung mv = ((Skalarverwaltung) aufgabe
+>>>>>>> origin/develop
+					.getVerwalter());
+			mv.splitt();
+			Auftrag a = mv.getnextAuftrag();
+			while (a != null) {
+<<<<<<< HEAD
+				Connection c = threadverwalter.workerVerwaltung.checkFreeWorker();
+				if (c != null) {
+					threadverwalter.aufgabe.addWorker(c);
+=======
+				Connection c = workerverwaltung.checkFreeWorker();
+				if (c != null) {
+					aufgabe.addWorker(c);
+>>>>>>> origin/develop
+					workerOutput(c, a);
+					a = mv.getnextAuftrag();
+				}
 			}
 
-			file.save(userDirectory);
-			file = null;
-			f = null;
-		} else if (inputObject instanceof SerializedMessage) {
-			//SerializedMessage message = (SerializedMessage) inputObject;
-			//String oldText = recievedText.getText();
-		}*/
+		} else if (inputObject instanceof Status) {
+<<<<<<< HEAD
+			int status = threadverwalter.aVerwaltung.getStatus((this));
+			((Status) inputObject).setErgebnis(status);
+			clientOutput(this, inputObject);
+		} else if (inputObject instanceof Matrizenauftrag) {
+			threadverwalter.workerVerwaltung.unlockWorker(this);
+			for (Iterator<Threadaufgabe> iterator = threadverwalter.threadAufgabeList
+=======
+			int status = aVerwaltung.getStatus((this));
+			((Status) inputObject).setErgebnis(status);
+			writeMsg(inputObject);
+		}else if (inputObject instanceof Matrizenauftrag) {
+			workerverwaltung.unlockWorker(this);
+			for (Iterator<Threadaufgabe> iterator = threadAufgabeList
+>>>>>>> origin/develop
+					.iterator(); iterator.hasNext();) {
+				Threadaufgabe aktuelleAufgabe;
+				aktuelleAufgabe = iterator.next();
+				if (aktuelleAufgabe.contains(this)) {
+					if (((Matrizenverwaltung) aktuelleAufgabe.getVerwalter()).empfangeergebnis(
+							((Matrizenauftrag) inputObject)
+									.getErgebnis(), this)) {
+						clientOutput(
+								aktuelleAufgabe.getAufgabe().getClient(),((Matrizenverwaltung) aktuelleAufgabe.getVerwalter()).getMatrizenmultiplikation());
+					}
+
+					aktuelleAufgabe.removeWorker(this);
+
+				}
+			}
+
+		} else if (inputObject instanceof Skalarauftrag) {
+<<<<<<< HEAD
+			threadverwalter.workerVerwaltung.unlockWorker(this);
+			for (Iterator<Threadaufgabe> iterator = threadverwalter.threadAufgabeList
+=======
+			workerverwaltung.unlockWorker(this);
+			for (Iterator<Threadaufgabe> iterator = threadAufgabeList
+>>>>>>> origin/develop
+					.iterator(); iterator.hasNext();) {
+				Threadaufgabe aktuelleAufgabe;
+				aktuelleAufgabe = iterator.next();
+				if (aktuelleAufgabe.contains(this)) {
+					if (((Skalarauftrag) inputObject)
+							.isAddieren()) {
+						Skalarprodukt endergebnis = ((Skalarverwaltung) aktuelleAufgabe
+								.getVerwalter())
+								.empfangegebnis((Skalarauftrag) inputObject);
+						clientOutput(aktuelleAufgabe
+								.getAufgabe().getClient(),
+								endergebnis);
+					} else {
+						Auftrag tempauftrag = ((Skalarverwaltung) aktuelleAufgabe
+								.getVerwalter())
+								.empfangezwischenergebnis(
+										this,
+										((Skalarauftrag) inputObject));
+						if (tempauftrag instanceof Skalarauftrag) {
+<<<<<<< HEAD
+							Connection c = threadverwalter.workerVerwaltung
+=======
+							Connection c = workerverwaltung
+>>>>>>> origin/develop
+									.checkFreeWorker();
+							workerOutput(c, tempauftrag);
+							aktuelleAufgabe.addWorker(c);
+
+						}
+					}
+					aktuelleAufgabe.removeWorker(this);
+
+				}
+			}
+		}
+<<<<<<< HEAD
+
 	}
+
+
+=======
+	}
+	
+	
+>>>>>>> origin/develop
+	private void clientOutput(final Connection client, final Object output) {
+		new Thread() {
+			@Override
+			public void run() {
+				client.writeMsg(output);
+			}
+		}.start();
+	}
+<<<<<<< HEAD
+	
+=======
+
+>>>>>>> origin/develop
+	private void workerOutput(final Connection worker, final Object output) {
+		new Thread() {
+			@Override
+			public void run() {
+				worker.writeMsg(output);
+			}
+		}.start();
+	}
+<<<<<<< HEAD
+
+=======
+	
+>>>>>>> origin/develop
 
 	@SuppressWarnings("deprecation")
 	public boolean writeMsg(Object msg) {
@@ -99,7 +286,6 @@ public class Connection extends Thread {
 			output.flush();
 			status = true;
 		} catch (IOException e) {
-			frmAdministration.setVisible(false);
 			close();
 			stop();
 		}
@@ -126,36 +312,3 @@ public class Connection extends Thread {
 		}
 	}
 }
-
-/*
-SerializedCommand msg = new SerializedCommand("deleteFile", path);
-writeMsg(msg);
-actionUpload = new AbstractAction("Upload") {
-private static final long serialVersionUID = 4044398634184641494L;
-
-public void actionPerformed(ActionEvent e) {
-	if (folderTree.m_display.getText().equals("")) {
-		JOptionPane.showMessageDialog(frmAdministration,
-				"Chose a folder", "Info",
-				JOptionPane.INFORMATION_MESSAGE);
-	} else {
-		JFileChooser chooser = new JFileChooser();
-		chooser.showDialog(null, "Chose file");
-		String path = chooser.getSelectedFile().getAbsolutePath();
-		String name = chooser.getSelectedFile().getName();
-		if (path != null) {
-
-			SerializedFile upload = new SerializedFile("\\" + name,
-					folderTree.m_display.getText());
-			upload.readFile(path);
-
-			writeMsg(upload);
-		} else {
-			JOptionPane.showMessageDialog(frmAdministration,
-					"Chose a folder", "Info",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-	}
-};
-*/

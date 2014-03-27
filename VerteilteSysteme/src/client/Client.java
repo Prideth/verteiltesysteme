@@ -42,6 +42,7 @@ import java.awt.event.ActionEvent;
 public class Client {
 
 	private static Client window;
+	private static Client client;
 	private static SocketThread socketThread;
 
 	private int anzahlWorker;
@@ -61,8 +62,11 @@ public class Client {
 	public int[][] inhaltMatrizeB;
 	public int[] inhaltVektorA;
 	public int[] inhaltVektorB;
-	public Object[][] ergebnisMatrize;
+	public int[][] ergebnisMatrize;
 	private int matrizeLaenge;
+	private int vektorLaenge;
+	private volatile static String statusMatrize;
+	private volatile static String statusVektor;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -77,6 +81,8 @@ public class Client {
 	}
 
 	public Client() {
+		client = this;
+
 		jobNummer = (int) ((Math.random()) * 10000 + 1);
 		anzahlWorker = 1;
 		inhaltMatrizeA = null;
@@ -87,7 +93,7 @@ public class Client {
 
 		initialize();
 
-		socketThread = new SocketThread(window);
+		socketThread = new SocketThread(client);
 		socketThread.start();
 	}
 
@@ -118,20 +124,20 @@ public class Client {
 		btnNewButton1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				String[][] matrizeB = null;
-				inhaltMatrizeB = null;
-				DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
-						matrizeB, null);
-
-				table.setModel(tabellenmodellMatrizeB);
-				table.repaint();
-				
 				JFileChooser chooser = new JFileChooser();
-				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				int rueckgabeWert = chooser
+						.showDialog(null, "Datei auswaehlen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					BufferedReader br = null;
 					BufferedReader br2 = null;
+					inhaltMatrizeB = null;
+					String[][] matrizeB = null;
+					DefaultTableModel tabellenmodellMatrizeB = new DefaultTableModel(
+							matrizeB, null);
+
+					table.setModel(tabellenmodellMatrizeB);
+					table.repaint();
 					try {
 						int anzahlZeilen = 0;
 						int anzahlSpalten = 0;
@@ -151,7 +157,6 @@ public class Client {
 								}
 
 								anzahlZeilen = anzahlZeilen + 1;
-								System.out.print(anzahlZeilen);
 							}
 						}
 						br.close();
@@ -195,7 +200,7 @@ public class Client {
 						JOptionPane
 								.showMessageDialog(
 										frmVerteilteBerechnung,
-										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Es ist ein Fehler aufgetreten. ÃœberprÃ¼fen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
 						try {
@@ -213,6 +218,7 @@ public class Client {
 		panel.add(scrollPane_1, BorderLayout.CENTER);
 
 		table_1 = new JTable();
+		table_1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table_1.setEnabled(false);
 		scrollPane_1.setViewportView(table_1);
 
@@ -226,7 +232,8 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				JFileChooser chooser = new JFileChooser();
-				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				int rueckgabeWert = chooser
+						.showDialog(null, "Datei auswaehlen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					BufferedReader br = null;
@@ -297,13 +304,13 @@ public class Client {
 						JOptionPane
 								.showMessageDialog(
 										frmVerteilteBerechnung,
-										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Es ist ein Fehler aufgetreten. Ueberpruefen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
 						try {
 							br.close();
 							br2.close();
-						} catch (IOException e) {
+						} catch (Exception e) {
 						}
 					}
 				}
@@ -315,6 +322,7 @@ public class Client {
 		panel_1.add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setEnabled(false);
 		scrollPane.setViewportView(table);
 
@@ -335,11 +343,19 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				int rueckgabeWert = chooser
+						.showDialog(null, "Datei auswaehlen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					BufferedReader br = null;
 					BufferedReader br2 = null;
+					inhaltVektorB = null;
+					String[][] vektorB = null;
+					DefaultTableModel tabellenmodellVektorB = new DefaultTableModel(
+							vektorB, null);
+
+					table_3.setModel(tabellenmodellVektorB);
+					table_3.repaint();
 					try {
 						int anzahlZeilen = 0;
 
@@ -353,6 +369,12 @@ public class Client {
 							anzahlZeilen = anzahlZeilen + 1;
 						}
 						br.close();
+
+						vektorLaenge = anzahlZeilen;
+
+						if (anzahlZeilen >= 200) {
+							throw new Exception();
+						}
 
 						String[] spalten = { "1." };
 						inhaltVektorA = new int[anzahlZeilen];
@@ -385,7 +407,7 @@ public class Client {
 						JOptionPane
 								.showMessageDialog(
 										frmVerteilteBerechnung,
-										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Es ist ein Fehler aufgetreten. Ueberpruefen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
 						try {
@@ -403,6 +425,7 @@ public class Client {
 		panel_3.add(scrollPane_2, BorderLayout.CENTER);
 
 		table_2 = new JTable();
+		table_2.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table_2.setEnabled(false);
 		scrollPane_2.setViewportView(table_2);
 
@@ -416,12 +439,16 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				int rueckgabeWert = chooser
+						.showDialog(null, "Datei auswaehlen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getAbsolutePath();
 					BufferedReader br = null;
 					BufferedReader br2 = null;
 					try {
+						if (inhaltVektorA == null) {
+							throw new Exception();
+						}
 						int anzahlZeilen = 0;
 
 						br = new BufferedReader(new FileReader(path));
@@ -434,6 +461,14 @@ public class Client {
 							anzahlZeilen = anzahlZeilen + 1;
 						}
 						br.close();
+
+						if (anzahlZeilen != vektorLaenge) {
+							throw new Exception();
+						}
+
+						if (anzahlZeilen >= 200) {
+							throw new Exception();
+						}
 
 						String[] spalten = { "1." };
 						inhaltVektorB = new int[anzahlZeilen];
@@ -466,13 +501,13 @@ public class Client {
 						JOptionPane
 								.showMessageDialog(
 										frmVerteilteBerechnung,
-										"Es ist ein Fehler aufgetreten. Überprüfen Sie die Eingabedatei und versuchen Sie es erneut.",
+										"Es ist ein Fehler aufgetreten. Ueberpruefen Sie die Eingabedatei und versuchen Sie es erneut.",
 										"Error", JOptionPane.ERROR_MESSAGE);
 					} finally {
 						try {
 							br.close();
 							br2.close();
-						} catch (IOException e1) {
+						} catch (Exception e1) {
 						}
 					}
 				}
@@ -484,6 +519,7 @@ public class Client {
 		panel_4.add(scrollPane_3, BorderLayout.CENTER);
 
 		table_3 = new JTable();
+		table_3.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table_3.setEnabled(false);
 		scrollPane_3.setViewportView(table_3);
 
@@ -507,7 +543,7 @@ public class Client {
 				try {
 					if (Integer.valueOf(textField.getText().trim()) <= 0) {
 						JOptionPane.showMessageDialog(null,
-								"Bitte gib eine Zahl größer als 0 ein.",
+								"Bitte gib eine Zahl groesser als 0 ein.",
 								"Error", JOptionPane.ERROR_MESSAGE);
 					} else {
 						anzahlWorker = Integer.valueOf(textField.getText()
@@ -546,6 +582,7 @@ public class Client {
 		panel_2.add(scrollPane_4, BorderLayout.CENTER);
 
 		table_4 = new JTable();
+		table_4.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table_4.setEnabled(false);
 		scrollPane_4.setViewportView(table_4);
 
@@ -568,7 +605,8 @@ public class Client {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				int rueckgabeWert = chooser.showDialog(null, "Datei auswählen");
+				int rueckgabeWert = chooser
+						.showDialog(null, "Datei auswaehlen");
 				if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
 					String path = chooser.getSelectedFile().getPath();
 
@@ -578,8 +616,8 @@ public class Client {
 					try {
 						StringBuffer sb = new StringBuffer("");
 						pWriter = new PrintWriter(new FileWriter(path));
-						for (int i = 0; i < inhaltMatrizeA.length; i++) {
-							int[] s = inhaltMatrizeA[i];
+						for (int i = 0; i < ergebnisMatrize.length; i++) {
+							int[] s = ergebnisMatrize[i];
 							for (int k = 0; k < s.length; k++) {
 								sb.append(Integer.toString(s[k]) + ";");
 							}
@@ -604,18 +642,27 @@ public class Client {
 			public void mouseClicked(MouseEvent arg0) {
 				jobNummer = (int) ((Math.random()) * 10000 + 1);
 				try {
-
 					if (chckbxMatrizenmultiplikation.isSelected()) {
-						Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(
-								jobNummer, anzahlWorker, null, inhaltMatrizeA,
-								inhaltMatrizeB);
-						if (socketThread.connected) {
-							socketThread.out(matrizenmull);
+						if (inhaltMatrizeA != null && inhaltMatrizeB != null) {
+							Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(
+									jobNummer, anzahlWorker, null,
+									inhaltMatrizeA, inhaltMatrizeB);
+							if (socketThread.connected) {
+								socketThread.out(matrizenmull);
+								//test();
+							} else {
+								JOptionPane
+										.showMessageDialog(
+												frmVerteilteBerechnung,
+												"Der Matrizenauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+												"Warnung",
+												JOptionPane.WARNING_MESSAGE);
+							}
 						} else {
 							JOptionPane
 									.showMessageDialog(
 											frmVerteilteBerechnung,
-											"Der Matrizenauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+											"Der Matrizenauftrag konnte nicht erstellt werden, da noch keine Daten eingelesen wurden.",
 											"Warnung",
 											JOptionPane.WARNING_MESSAGE);
 						}
@@ -627,18 +674,29 @@ public class Client {
 									"Es ist ein fehler aufgetreten möglicherweise besteht keine Internet-Verbindung zum Server.",
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
+
 				try {
 					if (chckbxSkalarprodukt.isSelected()) {
-						Skalarprodukt skalarmull = new Skalarprodukt(jobNummer,
-								anzahlWorker, null, inhaltVektorA,
-								inhaltVektorB);
-						if (socketThread.connected) {
-							socketThread.out(skalarmull);
+						if (inhaltVektorA != null && inhaltVektorB != null) {
+							Skalarprodukt skalarmull = new Skalarprodukt(
+									jobNummer, anzahlWorker, null,
+									inhaltVektorA, inhaltVektorB);
+							if (socketThread.connected) {
+								socketThread.out(skalarmull);
+								//test2();
+							} else {
+								JOptionPane
+										.showMessageDialog(
+												frmVerteilteBerechnung,
+												"Der Skalarauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+												"Warnung",
+												JOptionPane.WARNING_MESSAGE);
+							}
 						} else {
 							JOptionPane
 									.showMessageDialog(
 											frmVerteilteBerechnung,
-											"Der Skalarauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
+											"Der Skalarauftrag konnte nicht erstellt werden, da noch keine Daten eingelesen wurden.",
 											"Warnung",
 											JOptionPane.WARNING_MESSAGE);
 						}
@@ -647,10 +705,18 @@ public class Client {
 					JOptionPane
 							.showMessageDialog(
 									frmVerteilteBerechnung,
-									"Es ist ein fehler aufgetreten möglicherweise besteht keine Internet-Verbindung zum Server.",
+									"Es ist ein fehler aufgetreten moelicherweise besteht keine Internet-Verbindung zum Server.",
 									"Warnung", JOptionPane.WARNING_MESSAGE);
 				}
 
+				if (!chckbxSkalarprodukt.isSelected()
+						&& !chckbxMatrizenmultiplikation.isSelected()) {
+					JOptionPane
+							.showMessageDialog(
+									frmVerteilteBerechnung,
+									"Es wurde kein Algorithmus zur berechnung ausgewählt.",
+									"Warnung", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		panel_8.add(btnNewButton_3, BorderLayout.CENTER);
@@ -662,6 +728,9 @@ public class Client {
 				Status status = new Status(jobNummer);
 				if (socketThread.connected) {
 					socketThread.out(status);
+					/*System.out
+							.println("Matrizenmultiplikation: " + statusMatrize
+									+ " Skalarprodukt: " + statusVektor);*/
 				} else {
 					JOptionPane
 							.showMessageDialog(
@@ -672,15 +741,71 @@ public class Client {
 			}
 		});
 		panel_8.add(btnStatusAbfragen, BorderLayout.EAST);
+	}
 
-		/* ######################################################### */
+	public void test() {
+		new Thread() {
+			@Override
+			public void run() {
+				int fertig = 0;
+				int gesamt = inhaltMatrizeA.length * inhaltMatrizeB[0].length;
+
+				int[][] ergebnismatrix = null;
+				if (inhaltMatrizeA[0].length == inhaltMatrizeB.length) {
+					int zeilenm1 = inhaltMatrizeA.length;
+					int spaltenm1 = inhaltMatrizeA[0].length;
+					int spalenm2 = inhaltMatrizeB[0].length;
+					ergebnismatrix = new int[zeilenm1][spalenm2];
+					for (int i = 0; i < zeilenm1; i++) {
+						for (int j = 0; j < spalenm2; j++) {
+							ergebnismatrix[i][j] = 0;
+							for (int k = 0; k < spaltenm1; k++) {
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException ex) {
+									Thread.currentThread().interrupt();
+								}
+								ergebnismatrix[i][j] += inhaltMatrizeA[i][k]
+										* inhaltMatrizeB[k][j];
+							}
+							fertig++;
+							statusMatrize = fertig + "/" + gesamt;
+						}
+					}
+				}
+				setErgebnisMatrize(ergebnismatrix);
+			}
+		}.start();
+	}
+
+	public void test2() {
+		new Thread() {
+			@Override
+			public void run() {
+				int fertig = 0;
+				int gesamt = inhaltVektorA.length;
+				int skalarprodukt = 0;
+				for (int i = 0; i < inhaltVektorA.length; i++) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException ex) {
+						Thread.currentThread().interrupt();
+					}
+					skalarprodukt = skalarprodukt + inhaltVektorA[i]
+							* inhaltVektorB[i];
+					statusVektor = fertig + "/" + gesamt;
+				}
+
+				setSkalarproduktErgebnis(skalarprodukt);
+			}
+		}.start();
 	}
 
 	public int getJobNummer() {
 		return jobNummer;
 	}
 
-	public void setErgebnisMatrize(Object[][] ergebnisMatrize) {
+	public void setErgebnisMatrize(int[][] ergebnisMatrize) {
 		this.ergebnisMatrize = ergebnisMatrize;
 
 		String[] spalten = new String[ergebnisMatrize.length];
@@ -688,10 +813,23 @@ public class Client {
 			spalten[k] = k + ".";
 		}
 
+		String[][] ergebnisMatrizeString = new String[ergebnisMatrize.length][ergebnisMatrize[0].length];
+		for (int j = 0; j < ergebnisMatrize.length; j++) {
+			for (int k = 0; k < ergebnisMatrize[0].length; k++) {
+				ergebnisMatrizeString[j][k] = String
+						.valueOf(ergebnisMatrize[j][k]);
+			}
+		}
+
 		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(
 				this.ergebnisMatrize, spalten);
+				ergebnisMatrizeString, spalten);
 
 		table_4.setModel(tabellenmodellErgebnisMatrize);
 		table_4.repaint();
+	}
+
+	public void setSkalarproduktErgebnis(int ergebnis) {
+		textField_1.setText(String.valueOf(ergebnis));
 	}
 }

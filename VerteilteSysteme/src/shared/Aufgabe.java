@@ -5,9 +5,6 @@ import java.io.Serializable;
 import server.Connection;
 
 public class Aufgabe implements Serializable {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4905853972206165719L;
 	private int id;
 	private int worker;
@@ -23,7 +20,7 @@ public class Aufgabe implements Serializable {
 	public int getId() {
 		return id;
 	}
-	
+
 	public int getWorker() {
 		return worker;
 	}
@@ -31,15 +28,12 @@ public class Aufgabe implements Serializable {
 	public Connection getClient() {
 		return client;
 	}
-	
-	public void setClient(Connection client){
+
+	public void setClient(Connection client) {
 		this.client = client;
 	}
-	
-	
-        
-        
-    public int getStatus() {
+
+	public int getStatus() {
 		return 0;
 	}
 }

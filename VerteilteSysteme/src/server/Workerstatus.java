@@ -3,18 +3,18 @@ package server;
 public class Workerstatus {
 	private Connection connection;
 	private boolean locked;
-	
+
 	public Workerstatus(Connection connection) {
 		super();
 		this.connection = connection;
 		this.locked = false;
 	}
-	
-	public void lock (){
+
+	public void lock() {
 		this.locked = true;
 	}
-	
-	public void unlock (){
+
+	public void unlock() {
 		this.locked = false;
 	}
 
@@ -25,9 +25,4 @@ public class Workerstatus {
 	public boolean isLocked() {
 		return locked;
 	}
-	
-	
-	
-	
-
 }

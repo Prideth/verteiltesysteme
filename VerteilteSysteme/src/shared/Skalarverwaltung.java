@@ -1,6 +1,9 @@
 package shared;
 
 import server.Connection;
+import shared.Auftrag;
+import shared.Skalarauftrag;
+import shared.Skalarprodukt;
 
 //Klasse zum aufteilen und verarbeiten einer Skalarproduktaufgabe
 public class Skalarverwaltung implements Verwalter {
@@ -63,8 +66,14 @@ public class Skalarverwaltung implements Verwalter {
 	public Skalarauftrag getnextAuftrag(){
 		Skalarauftrag auftrag = null;
 		if (auftragscount < auftraege.length){
+<<<<<<< HEAD
 			if(auftraege[auftragscount] instanceof Skalarauftrag)
 				auftrag = (Skalarauftrag) auftraege[auftragscount];
+=======
+			if(auftraege[auftragscount] instanceof Skalarauftrag){
+				auftrag = (Skalarauftrag) auftraege[auftragscount];
+			}
+>>>>>>> origin/develop
 			auftragscount++;
 		}
 		return auftrag;	

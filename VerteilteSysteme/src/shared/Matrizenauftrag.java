@@ -13,7 +13,7 @@ public class Matrizenauftrag extends Auftrag implements Serializable {
 		this.zeile = zeile;
 		this.spalte = spalte;
 	}
-	
+
 	public int[] getZeile() {
 		return zeile;
 	}

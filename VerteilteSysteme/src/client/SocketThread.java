@@ -13,12 +13,14 @@ public class SocketThread extends Thread {
 	final static int PORT = 5555;
 	final static String IP = "localhost";
 	
-	private static Client client;
-	public static Socket socket;
-	private static Object inputObject;
-	private static ObjectInputStream input;
-	private static ObjectOutputStream output;
+	public Socket socket;
 	public boolean connected = false;
+	
+	private Client client;
+	private Object inputObject;
+	private ObjectInputStream input;
+	private ObjectOutputStream output;
+	
 
 	public SocketThread(Client client) {
 		this.client = client;
@@ -61,14 +63,14 @@ public class SocketThread extends Thread {
 		}
 	}
 
-	private static void analyseInput() {
+	private void analyseInput() {
 		if (inputObject instanceof Matrizenmultiplikation) {
 			Matrizenmultiplikation ergebnisMatrize = (Matrizenmultiplikation) inputObject;
 			if(ergebnisMatrize.getId() == client.getJobNummer()) {
 				Object[][] objectErgebnis = ergebnisMatrize.getMatrixErgebnis();
 				
 				//int[][] integerErgebnis = new int[objectErgebnis[0].length][objectErgebnis.length];
-				client.setErgebnisMatrize(objectErgebnis);
+				//client.setErgebnisMatrize(objectErgebnis);
 			}
 		} else if (inputObject instanceof Skalarprodukt) {
 			Skalarprodukt ergebnisSkalar = (Skalarprodukt) inputObject;
@@ -95,7 +97,7 @@ public class SocketThread extends Thread {
 		}
 	}
 
-	private static void close() {
+	private void close() {
 		try {
 			if (input != null) {
 				input.close();

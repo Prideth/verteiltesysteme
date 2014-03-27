@@ -22,8 +22,8 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 		this.matrixA = matrixA;
 		this.matrixB = matrixB;
 		this.matrixErgebnis = new Object[matrixA.length][matrixB[0].length];
-		for(int i = 0; i < matrixA.length; i++){
-			for(int j=0; j < matrixB[i].length; j++){
+		for (int i = 0; i < matrixA.length; i++) {
+			for (int j = 0; j < matrixB[i].length; j++) {
 				matrixErgebnis[i][j] = new EmptyObject();
 			}
 		}
@@ -46,8 +46,8 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 	}
 
 	public Object[][] getMatrixErgebnis() {
-		if(matrixErgebnis == null)
-			System.exit( 0 );
+		if (matrixErgebnis == null)
+			System.exit(0);
 		return matrixErgebnis;
 	}
 
@@ -55,39 +55,41 @@ public class Matrizenmultiplikation extends Aufgabe implements Serializable {
 		this.matrixErgebnis = matrixErgebnis;
 	}
 
-        public void setStelle(int spalte, int zeile, Integer zahl){
-            matrixErgebnis[spalte][zeile] = zahl;
-        }
-        
-        public Object getStelle(int spalte, int zeile){
-            return matrixErgebnis[spalte][zeile];
-        }
-        
-        
-        /**
-         * 
-         * Berechnet die Prozentzahl wie viel schon fertiggestellt wurde
-         * 
-         * @return liefert zurÃ¼ck zu wievie Prozent es schon fertig gestellt ist
-         */
-        @Override
+	public void setStelle(int spalte, int zeile, Integer zahl) {
+		matrixErgebnis[spalte][zeile] = zahl;
+	}
+
+	public Object getStelle(int spalte, int zeile) {
+		return matrixErgebnis[spalte][zeile];
+	}
+
+	/**
+	 * 
+	 * Berechnet die Prozentzahl wie viel schon fertiggestellt wurde
+	 * 
+	 * @return liefert zurück zu wievie Prozent es schon fertig gestellt ist
+	 */
+	@Override
 	public int getStatus() {
 		double gesamt = 0;
 		double fertig = 0;
 		if(matrixErgebnis == null)
 			return 0;
+<<<<<<< HEAD
 		
+=======
+>>>>>>> origin/develop
 		
-		for(int i=0; i < matrixErgebnis.length; i++){
-			for (int j=0; j < matrixErgebnis[i].length; j++){
-				if(matrixErgebnis[i][j] instanceof Integer)
+		for (int i = 0; i < matrixErgebnis.length; i++) {
+			for (int j = 0; j < matrixErgebnis[i].length; j++) {
+				if (matrixErgebnis[i][j] instanceof Integer)
 					fertig++;
-				
+
 				gesamt++;
 			}
 		}
-		
-		return (int) (fertig*100/gesamt);
+
+		return (int) (fertig * 100 / gesamt);
 	}
 
 }
