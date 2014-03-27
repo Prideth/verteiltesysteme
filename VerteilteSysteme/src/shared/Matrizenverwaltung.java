@@ -45,8 +45,8 @@ public class Matrizenverwaltung implements Verwalter {
 					int[] spalte = new int[MatrixA.length];
 					int[] zeile = new int[MatrixB[i].length];
 					for (int k = 0; (k < MatrixA.length && k < MatrixB[i].length); k++) {
-						spalte[k] = MatrixA[i + k][j];
-						zeile[k] = MatrixB[i][j + k];
+						spalte[k] = MatrixA[k][i];
+						zeile[k] = MatrixB[j][k];
 					}
 					matrixErgebnis[i][j] = new Matrizenauftrag(zeile, spalte);
 				}

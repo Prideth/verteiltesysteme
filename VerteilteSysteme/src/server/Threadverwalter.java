@@ -50,7 +50,7 @@ public class Threadverwalter extends Thread {
 	/*public void run() {
 		while (true) {
 			checkClientInput();
-			// checkWorkerInput();
+			checkWorkerInput();
 		}
 	}
 
@@ -60,6 +60,7 @@ public class Threadverwalter extends Thread {
 			Object[] lastInput = client.getLastInput();
 
 			if (lastInput[0] instanceof Matrizenmultiplikation) {
+<<<<<<< HEAD
 				/*
 				 * ((Matrizenmultiplikation) lastInput[0]).setClient(client);
 				 * aVerwaltung.add((Matrizenmultiplikation) lastInput[0]);
@@ -72,6 +73,23 @@ public class Threadverwalter extends Thread {
 				 * Connection c = workerVerwaltung.checkFreeWorker(); if (c !=
 				 * null) { aufgabe.addWorker(c); workerOutput(c, a); a =
 				 * mv.getNextAuftrag(); } }
+=======
+				  ((Matrizenmultiplikation) lastInput[0]).setClient(client);
+				  aVerwaltung.add((Matrizenmultiplikation) lastInput[0]);
+				  aufgabe = new Threadaufgabe( (Matrizenmultiplikation)
+				  lastInput[0], new Matrizenverwaltung(
+				  (Matrizenmultiplikation) lastInput[0], client));
+				  threadAufgabeList.add(aufgabe); Matrizenverwaltung mv =
+				  ((Matrizenverwaltung) aufgabe .getVerwalter()); mv.splitt();
+				  Auftrag a = mv.getNextAuftrag(); while (a != null) {
+				  Connection c = workerVerwaltung.checkFreeWorker(); 
+				  if (c !=  null) 
+				  { 
+					  aufgabe.addWorker(c); 
+					  workerOutput(c, a); 
+					  a =  mv.getNextAuftrag(); 
+				  } }
+>>>>>>> origin/develop
 				 
 			} else if (lastInput[0] instanceof Skalarprodukt) {
 

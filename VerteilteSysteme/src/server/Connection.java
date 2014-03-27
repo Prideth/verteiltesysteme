@@ -29,7 +29,15 @@ public class Connection extends Thread {
 	private Object[] deliever = new Object[3];
 	private static ObjectInputStream input;
 	private static ObjectOutputStream output;
+<<<<<<< HEAD
 	private Threadverwalter threadverwalter;
+=======
+	private Object lastInput;
+	private Aufgabenverwaltung aVerwaltung = null;
+	private List<Threadaufgabe> threadAufgabeList = null;
+	private Workerverwaltung workerverwaltung;
+	private Threadaufgabe aufgabe;
+>>>>>>> origin/develop
 
 	public void run() {
 		while (true) {
@@ -46,8 +54,9 @@ public class Connection extends Thread {
 		deliever[0] = null;
 	}
 
-	public Connection(Socket socket) {
+	public Connection(Socket socket, Workerverwaltung workerverwaltung) {
 		this.socket = socket;
+		this.workerverwaltung = workerverwaltung;
 		try {
 			OutputStream os = socket.getOutputStream();
 			os.flush();
@@ -84,9 +93,11 @@ public class Connection extends Thread {
 		} catch (IOException e) {
 		}
 		deliever[0] = inputObject;
+		lastInput	= inputObject;
 	}
 	
 	public void analyseInput() {
+<<<<<<< HEAD
 		if(inputObject == null)
 			return;
 		
@@ -103,35 +114,74 @@ public class Connection extends Thread {
 			 Connection c = threadverwalter.workerVerwaltung.checkFreeWorker(); if (c !=
 			 null) { threadverwalter.aufgabe.addWorker(c); workerOutput(c, a); a =
 			 mv.getNextAuftrag(); } }
+=======
+		if (inputObject instanceof Matrizenmultiplikation) {
+			
+			  ((Matrizenmultiplikation) inputObject).setClient(this);
+			  aVerwaltung.add((Matrizenmultiplikation) inputObject);
+			  aufgabe = new Threadaufgabe( (Matrizenmultiplikation)
+					  inputObject, new Matrizenverwaltung(
+			  (Matrizenmultiplikation) inputObject, this));
+			  threadAufgabeList.add(aufgabe); Matrizenverwaltung mv =
+			  ((Matrizenverwaltung) aufgabe .getVerwalter()); mv.splitt();
+			  Auftrag a = mv.getNextAuftrag(); while (a != null) {
+			  Connection c = workerverwaltung.checkFreeWorker(); if (c !=
+			  null) { aufgabe.addWorker(c); workerOutput(c, a); a =
+			  mv.getNextAuftrag(); } }
+>>>>>>> origin/develop
 			 
 		} else if (inputObject instanceof Skalarprodukt) {
 
 			((Skalarprodukt) inputObject).setClient(this);
+<<<<<<< HEAD
 			//threadverwalter.aVerwaltung.add((Skalarprodukt) inputObject);
 			threadverwalter.aufgabe = new Threadaufgabe((Skalarprodukt) inputObject,
 					new Skalarverwaltung((Skalarprodukt) inputObject,
 							this));
 			threadverwalter.threadAufgabeList.add(threadverwalter.aufgabe);
 			Skalarverwaltung mv = ((Skalarverwaltung) threadverwalter.aufgabe
+=======
+			aVerwaltung.add((Skalarprodukt) inputObject);
+			aufgabe = new Threadaufgabe((Skalarprodukt) inputObject,
+					new Skalarverwaltung((Skalarprodukt) inputObject,
+							this));
+			threadAufgabeList.add(aufgabe);
+			Skalarverwaltung mv = ((Skalarverwaltung) aufgabe
+>>>>>>> origin/develop
 					.getVerwalter());
 			mv.splitt();
 			Auftrag a = mv.getnextAuftrag();
 			while (a != null) {
+<<<<<<< HEAD
 				Connection c = threadverwalter.workerVerwaltung.checkFreeWorker();
 				if (c != null) {
 					threadverwalter.aufgabe.addWorker(c);
+=======
+				Connection c = workerverwaltung.checkFreeWorker();
+				if (c != null) {
+					aufgabe.addWorker(c);
+>>>>>>> origin/develop
 					workerOutput(c, a);
 					a = mv.getnextAuftrag();
 				}
 			}
 
 		} else if (inputObject instanceof Status) {
+<<<<<<< HEAD
 			int status = threadverwalter.aVerwaltung.getStatus((this));
 			((Status) inputObject).setErgebnis(status);
 			clientOutput(this, inputObject);
 		} else if (inputObject instanceof Matrizenauftrag) {
 			threadverwalter.workerVerwaltung.unlockWorker(this);
 			for (Iterator<Threadaufgabe> iterator = threadverwalter.threadAufgabeList
+=======
+			int status = aVerwaltung.getStatus((this));
+			((Status) inputObject).setErgebnis(status);
+			writeMsg(inputObject);
+		}else if (inputObject instanceof Matrizenauftrag) {
+			workerverwaltung.unlockWorker(this);
+			for (Iterator<Threadaufgabe> iterator = threadAufgabeList
+>>>>>>> origin/develop
 					.iterator(); iterator.hasNext();) {
 				Threadaufgabe aktuelleAufgabe;
 				aktuelleAufgabe = iterator.next();
@@ -149,8 +199,13 @@ public class Connection extends Thread {
 			}
 
 		} else if (inputObject instanceof Skalarauftrag) {
+<<<<<<< HEAD
 			threadverwalter.workerVerwaltung.unlockWorker(this);
 			for (Iterator<Threadaufgabe> iterator = threadverwalter.threadAufgabeList
+=======
+			workerverwaltung.unlockWorker(this);
+			for (Iterator<Threadaufgabe> iterator = threadAufgabeList
+>>>>>>> origin/develop
 					.iterator(); iterator.hasNext();) {
 				Threadaufgabe aktuelleAufgabe;
 				aktuelleAufgabe = iterator.next();
@@ -170,7 +225,11 @@ public class Connection extends Thread {
 										this,
 										((Skalarauftrag) inputObject));
 						if (tempauftrag instanceof Skalarauftrag) {
+<<<<<<< HEAD
 							Connection c = threadverwalter.workerVerwaltung
+=======
+							Connection c = workerverwaltung
+>>>>>>> origin/develop
 									.checkFreeWorker();
 							workerOutput(c, tempauftrag);
 							aktuelleAufgabe.addWorker(c);
@@ -182,10 +241,16 @@ public class Connection extends Thread {
 				}
 			}
 		}
+<<<<<<< HEAD
 
 	}
 
 
+=======
+	}
+	
+	
+>>>>>>> origin/develop
 	private void clientOutput(final Connection client, final Object output) {
 		new Thread() {
 			@Override
@@ -194,7 +259,11 @@ public class Connection extends Thread {
 			}
 		}.start();
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> origin/develop
 	private void workerOutput(final Connection worker, final Object output) {
 		new Thread() {
 			@Override
@@ -203,7 +272,11 @@ public class Connection extends Thread {
 			}
 		}.start();
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> origin/develop
 
 	@SuppressWarnings("deprecation")
 	public boolean writeMsg(Object msg) {
