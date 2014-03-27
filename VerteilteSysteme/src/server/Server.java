@@ -61,15 +61,7 @@ public class Server extends JFrame {
 
 	public Server() {
 		server = this;
-
-		try {
-			listenerClient = new Listener(portClient, maxConnections);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(server,
-					"Cannot creat Listener with port " + portClient, "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		listenerClient.start();
+		workerverwaltung = new Workerverwaltung();
 
 		try {
 			listenerWorker = new Listener(portWorker, maxConnections);
@@ -80,10 +72,21 @@ public class Server extends JFrame {
 		}
 		listenerWorker.start();
 		
-		workerverwaltung = new Workerverwaltung();
+		
 		workerverwaltung.initial(listenerWorker);
-		threadVerwalter = new Threadverwalter(listenerClient, listenerWorker, workerverwaltung);
-		threadVerwalter.start();
+		threadVerwalter = new Threadverwalter(workerverwaltung);
+		//threadVerwalter = new Threadverwalter(listenerClient, listenerWorker, workerverwaltung);
+		//threadVerwalter.start();
+		
+		try {
+			listenerClient = new Listener(portClient, maxConnections);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(server,
+					"Cannot creat Listener with port " + portClient, "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		listenerClient.start();
+
 
 		initialize();
 
@@ -167,6 +170,7 @@ public class Server extends JFrame {
 				listenerWorker.refresh();
 				
 				workerverwaltung.updateWorkerList(listenerWorker);
+				threadVerwalter.update(listenerWorker);
 
 				// Aktuallisiere connectionTable
 				tableModelClient = new DefaultTableModel(

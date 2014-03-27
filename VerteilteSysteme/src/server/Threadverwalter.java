@@ -17,23 +17,37 @@ import shared.Matrizenverwaltung;
 
 public class Threadverwalter extends Thread {
 
-	private volatile Listener clientListener;
-	private volatile Listener workerListener;
-	private volatile Aufgabenverwaltung aVerwaltung = null;
-	private volatile List<Threadaufgabe> threadAufgabeList = null;
-	private volatile Workerverwaltung workerVerwaltung;
-	private volatile Threadaufgabe aufgabe;
+	public volatile Listener clientListener;
+	public volatile Listener workerListener;
+	public volatile Aufgabenverwaltung aVerwaltung = null;
+	public volatile List<Threadaufgabe> threadAufgabeList = null;
+	public volatile Workerverwaltung workerVerwaltung;
+	public volatile Threadaufgabe aufgabe;
 
 	Threadverwalter(Listener listenerClient, Listener listenerWorker,
-			Workerverwaltung workerVerwaltung) {
+		Workerverwaltung workerVerwaltung) {
 		this.clientListener = listenerClient;
 		this.workerListener = listenerWorker;
 		this.workerVerwaltung = workerVerwaltung;
 		aVerwaltung = new Aufgabenverwaltung();
 		threadAufgabeList = new LinkedList<Threadaufgabe>();
+		
 	}
+	
+	
+	Threadverwalter(Workerverwaltung workerVerwaltung) {
+			this.workerVerwaltung = workerVerwaltung;
+			aVerwaltung = new Aufgabenverwaltung();
+			threadAufgabeList = new LinkedList<Threadaufgabe>();
+			
+		}
+	
+	
+	
+	
+	
 
-	public void run() {
+	/*public void run() {
 		while (true) {
 			checkClientInput();
 			// checkWorkerInput();
@@ -58,7 +72,7 @@ public class Threadverwalter extends Thread {
 				 * Connection c = workerVerwaltung.checkFreeWorker(); if (c !=
 				 * null) { aufgabe.addWorker(c); workerOutput(c, a); a =
 				 * mv.getNextAuftrag(); } }
-				 */
+				 
 			} else if (lastInput[0] instanceof Skalarprodukt) {
 
 				((Skalarprodukt) lastInput[0]).setClient(client);
@@ -176,5 +190,88 @@ public class Threadverwalter extends Thread {
 				worker.writeMsg(output);
 			}
 		}.start();
+	}*/
+	
+	
+	
+	public void update(Listener workerListener) {
+		workerVerwaltung.updateWorkerList(workerListener);
 	}
+
+
+	public Listener getClientListener() {
+		return clientListener;
+	}
+
+
+	public void setClientListener(Listener clientListener) {
+		this.clientListener = clientListener;
+	}
+
+
+	public Listener getWorkerListener() {
+		return workerListener;
+	}
+
+
+	public void setWorkerListener(Listener workerListener) {
+		this.workerListener = workerListener;
+	}
+
+
+	public Aufgabenverwaltung getaVerwaltung() {
+		return aVerwaltung;
+	}
+
+
+	public void setaVerwaltung(Aufgabenverwaltung aVerwaltung) {
+		this.aVerwaltung = aVerwaltung;
+	}
+
+
+	public List<Threadaufgabe> getThreadAufgabeList() {
+		return threadAufgabeList;
+	}
+
+
+	public void setThreadAufgabeList(List<Threadaufgabe> threadAufgabeList) {
+		this.threadAufgabeList = threadAufgabeList;
+	}
+
+
+	public Workerverwaltung getWorkerVerwaltung() {
+		return workerVerwaltung;
+	}
+
+
+	public void setWorkerVerwaltung(Workerverwaltung workerVerwaltung) {
+		this.workerVerwaltung = workerVerwaltung;
+	}
+
+
+	public Threadaufgabe getAufgabe() {
+		return aufgabe;
+	}
+
+
+	public Threadaufgabe setAufgabe(Threadaufgabe aufgabe) {
+		return this.aufgabe = aufgabe;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
