@@ -821,8 +821,7 @@ public class Client {
 			}
 		}
 
-		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(this.ergebnisMatrize, spalten);
-				ergebnisMatrizeString, spalten); 
+		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(ergebnisMatrizeString, spalten); 
 
 		table_4.setModel(tabellenmodellErgebnisMatrize);
 		table_4.repaint();
