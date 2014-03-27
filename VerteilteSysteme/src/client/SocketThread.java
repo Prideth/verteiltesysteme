@@ -1,10 +1,8 @@
 package client;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import javax.swing.JOptionPane;
-
 import shared.Matrizenmultiplikation;
 import shared.Skalarprodukt;
 import shared.Status;
@@ -12,15 +10,14 @@ import shared.Status;
 public class SocketThread extends Thread {
 	final static int PORT = 5555;
 	final static String IP = "localhost";
-	
+
 	public Socket socket;
 	public boolean connected = false;
-	
+
 	private Client client;
 	private Object inputObject;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
-	
 
 	public SocketThread(Client client) {
 		this.client = client;
@@ -33,7 +30,7 @@ public class SocketThread extends Thread {
 			analyseInput();
 		}
 	}
-	
+
 	private void isConnected() {
 		if (connected == false) {
 			while (true) {
@@ -66,33 +63,34 @@ public class SocketThread extends Thread {
 	private void analyseInput() {
 		if (inputObject instanceof Matrizenmultiplikation) {
 			Matrizenmultiplikation ergebnisMatrize = (Matrizenmultiplikation) inputObject;
-			if(ergebnisMatrize.getId() == client.getJobNummer()) {
-				Object[][] objectErgebnis = ergebnisMatrize.getMatrixErgebnis();
-				
-				//int[][] integerErgebnis = new int[objectErgebnis[0].length][objectErgebnis.length];
-				//client.setErgebnisMatrize(objectErgebnis);
+			if (ergebnisMatrize.getId() == client.getJobNummer()) {
+				/*Object[][] objectErgebnis = ergebnisMatrize.getMatrixErgebnis();
+
+				int[][] integerErgebnis = new int[objectErgebnis[0].length][objectErgebnis.length];
+				client.setErgebnisMatrize(objectErgebnis);*/
 			}
 		} else if (inputObject instanceof Skalarprodukt) {
 			Skalarprodukt ergebnisSkalar = (Skalarprodukt) inputObject;
-			if(ergebnisSkalar.getId() == client.getJobNummer()) {
-				Object objectErgebnis = ergebnisSkalar.getErgebnis();
-				client.textField_1.setText(String.valueOf(objectErgebnis));
+			if (ergebnisSkalar.getId() == client.getJobNummer()) {
+				/*Object objectErgebnis = ergebnisSkalar.getErgebnis();
+				client.textField_1.setText(String.valueOf(objectErgebnis));*/
 			}
 		} else if (inputObject instanceof Status) {
 			Status ergebnisStatus = (Status) inputObject;
-			if(ergebnisStatus.getJobNummer() == client.getJobNummer()) {
-				int ergebnis = ergebnisStatus.getErgebnis();
-				if(ergebnis == -1) {
-					JOptionPane.showMessageDialog(
-							client.frmVerteilteBerechnung,
-							"Status konnte nicht abgefragt werden. Aufgabe wurde nicht gefunden.",
-							"Error", JOptionPane.ERROR_MESSAGE);
+			if (ergebnisStatus.getJobNummer() == client.getJobNummer()) {
+				/*int ergebnis = ergebnisStatus.getErgebnis();
+				if (ergebnis == -1) {
+					JOptionPane
+							.showMessageDialog(
+									client.frmVerteilteBerechnung,
+									"Status konnte nicht abgefragt werden. Aufgabe wurde nicht gefunden.",
+									"Error", JOptionPane.ERROR_MESSAGE);
 				} else {
 					JOptionPane.showMessageDialog(
-							client.frmVerteilteBerechnung,
-							"Status: " + ergebnis + " %",
-							"Info", JOptionPane.INFORMATION_MESSAGE);
-				}	
+							client.frmVerteilteBerechnung, "Status: "
+									+ ergebnis + " %", "Info",
+							JOptionPane.INFORMATION_MESSAGE);
+				}*/
 			}
 		}
 	}

@@ -40,18 +40,25 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class Client {
-
-	private static Client window;
 	private static Client client;
+	private static Client window;
 	private static SocketThread socketThread;
+	
+	private volatile static String statusMatrize;
+	private volatile static String statusVektor;
 
 	private int anzahlWorker;
+	private int matrizeLaenge;
+	private int vektorLaenge;
+	
 	private JTable table;
 	private JTable table_1;
 	private JTable table_2;
 	private JTable table_3;
-	private JTextField textField;
 	private JTable table_4;
+	
+	private JTextField textField;
+	
 	private JCheckBox chckbxMatrizenmultiplikation;
 	private JCheckBox chckbxSkalarprodukt;
 
@@ -63,10 +70,7 @@ public class Client {
 	public int[] inhaltVektorA;
 	public int[] inhaltVektorB;
 	public int[][] ergebnisMatrize;
-	private int matrizeLaenge;
-	private int vektorLaenge;
-	private volatile static String statusMatrize;
-	private volatile static String statusVektor;
+	
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -644,12 +648,10 @@ public class Client {
 				try {
 					if (chckbxMatrizenmultiplikation.isSelected()) {
 						if (inhaltMatrizeA != null && inhaltMatrizeB != null) {
-							Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(
-									jobNummer, anzahlWorker, null,
-									inhaltMatrizeA, inhaltMatrizeB);
-							if (socketThread.connected) {
+							//Matrizenmultiplikation matrizenmull = new Matrizenmultiplikation(jobNummer, anzahlWorker, null, inhaltMatrizeA, inhaltMatrizeB);
+							checkIt();
+							/*if (socketThread.connected) {
 								socketThread.out(matrizenmull);
-								//test();
 							} else {
 								JOptionPane
 										.showMessageDialog(
@@ -657,7 +659,7 @@ public class Client {
 												"Der Matrizenauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
 												"Warnung",
 												JOptionPane.WARNING_MESSAGE);
-							}
+							}*/
 						} else {
 							JOptionPane
 									.showMessageDialog(
@@ -678,12 +680,10 @@ public class Client {
 				try {
 					if (chckbxSkalarprodukt.isSelected()) {
 						if (inhaltVektorA != null && inhaltVektorB != null) {
-							Skalarprodukt skalarmull = new Skalarprodukt(
-									jobNummer, anzahlWorker, null,
-									inhaltVektorA, inhaltVektorB);
-							if (socketThread.connected) {
+							//Skalarprodukt skalarmull = new Skalarprodukt(jobNummer, anzahlWorker, null, inhaltVektorA, inhaltVektorB);
+							checkIt2();
+							/*if (socketThread.connected) {
 								socketThread.out(skalarmull);
-								//test2();
 							} else {
 								JOptionPane
 										.showMessageDialog(
@@ -691,7 +691,7 @@ public class Client {
 												"Der Skalarauftrag konnte nicht versendet werden, bitte versuchen Sie es erneut.",
 												"Warnung",
 												JOptionPane.WARNING_MESSAGE);
-							}
+							}*/
 						} else {
 							JOptionPane
 									.showMessageDialog(
@@ -725,25 +725,28 @@ public class Client {
 		btnStatusAbfragen.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				Status status = new Status(jobNummer);
-				if (socketThread.connected) {
+				//Status status = new Status(jobNummer);
+				JOptionPane
+				.showMessageDialog(
+						frmVerteilteBerechnung,
+						"Matrizenmultiplikation: " + statusMatrize
+						+ " Skalarprodukt: " + statusVektor,
+						"Info", JOptionPane.INFORMATION_MESSAGE);
+				/*if (socketThread.connected) {
 					socketThread.out(status);
-					/*System.out
-							.println("Matrizenmultiplikation: " + statusMatrize
-									+ " Skalarprodukt: " + statusVektor);*/
 				} else {
 					JOptionPane
 							.showMessageDialog(
 									frmVerteilteBerechnung,
 									"Eine Stautsabfrage konnte nicht versendet werden, bitte versuchen Sie es erneut.",
 									"Warnung", JOptionPane.WARNING_MESSAGE);
-				}
+				}*/
 			}
 		});
 		panel_8.add(btnStatusAbfragen, BorderLayout.EAST);
 	}
 
-	public void test() {
+	public void checkIt() {
 		new Thread() {
 			@Override
 			public void run() {
@@ -778,7 +781,7 @@ public class Client {
 		}.start();
 	}
 
-	public void test2() {
+	public void checkIt2() {
 		new Thread() {
 			@Override
 			public void run() {
@@ -787,12 +790,13 @@ public class Client {
 				int skalarprodukt = 0;
 				for (int i = 0; i < inhaltVektorA.length; i++) {
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(100);
 					} catch (InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
 					skalarprodukt = skalarprodukt + inhaltVektorA[i]
 							* inhaltVektorB[i];
+					fertig++;
 					statusVektor = fertig + "/" + gesamt;
 				}
 
@@ -821,7 +825,8 @@ public class Client {
 			}
 		}
 
-		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(ergebnisMatrizeString, spalten); 
+		DefaultTableModel tabellenmodellErgebnisMatrize = new DefaultTableModel(
+				ergebnisMatrizeString, spalten);
 
 		table_4.setModel(tabellenmodellErgebnisMatrize);
 		table_4.repaint();
